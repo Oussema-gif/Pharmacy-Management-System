@@ -109,28 +109,22 @@ Frontend: http://localhost:4200
 
 ## 📸 Screenshots
 
-- https://screenshots/login.png
-- https://screenshots/dashboard.png
-- https://screenshots/users.png
-- https://screenshots/pos.png
-- https://screenshots/reports.png
-- https://screenshots/alerts.png
-- https://screenshots/stocks.png
-- https://screenshots/purchases.png
-- https://screenshots/prescriptions.png
-- https://screenshots/medications.png
-- https://screenshots/auditlogs.png
-- https://screenshots/profile.png
-- https://screenshots/branches.png
-- https://screenshots/patients.png
-- https://screenshots/suppliers.png
-- https://screenshots/lightmode.png
+| | |
+|---|---|
+| **Login** ![Login](screenshots/login.png) | **Dashboard** ![Dashboard](screenshots/dashboard.png) |
+| **User Management** ![Users](screenshots/users.png) | **Point of Sale** ![POS](screenshots/pos.png) |
+| **Reports** ![Reports](screenshots/reports.png) | **Alerts** ![Alerts](screenshots/alerts.png) |
+| **Stock** ![Stock](screenshots/stocks.png) | **Purchases** ![Purchases](screenshots/purchases.png) |
+| **Prescriptions** ![Prescriptions](screenshots/prescriptions.png) | **Medications** ![Medications](screenshots/medications.png) |
+| **Audit Logs** ![Audit Logs](screenshots/auditlogs.png) | **Profile** ![Profile](screenshots/profile.png) |
+| **Branches** ![Branches](screenshots/branches.png) | **Patients** ![Patients](screenshots/patients.png) |
+| **Suppliers** ![Suppliers](screenshots/suppliers.png) | **Light Mode** ![Light Mode](screenshots/lightmode.png) |
 
 ---
 
 ## 🎥 Demo Video
 
-▶ [Watch the full demo video (Google Drive)](#)
+▶ [Watch the full demo video (Google Drive)](https://drive.google.com/file/d/1QTxo3JQe3fA4yXSt4fWaREEztzduRnnc/view?usp=sharing)
 
 ---
 
