@@ -15,8 +15,8 @@
           <span>
             <strong>Dr. {{ pres.doctorName }}</strong> – {{ pres.date }} – Patient: {{ pres.patientName }}
           </span>
-          <button class="btn btn-sm btn-danger" (click)="deletePrescription(pres.id!)">
-            Delete
+          <button class="btn-action btn-delete" (click)="deletePrescription(pres.id!)" title="Delete">
+            <i class="fas fa-trash"></i>
           </button>
         </div>
 

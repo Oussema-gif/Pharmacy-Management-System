@@ -12,9 +12,12 @@ import { Router, RouterModule } from '@angular/router';
 import { InventoryService } from '../../core/services/inventory.service';
 import { SupplierService } from '../../core/services/supplier.service';
 import { MedicationService } from '../../core/services/medication.service';
+import { BranchService } from '../../core/services/branch.service';
 import { ToastService } from '../../core/services/toast.service';
+import { AuthService } from '../../core/auth.service';
 import { Supplier } from '../../core/models/supplier.model';
 import { Medication } from '../../core/models/medication.model';
+import { Branch } from '../../core/models/branch.model';
 
 @Component({
   selector: 'app-purchase-form',
@@ -24,15 +27,18 @@ import { Medication } from '../../core/models/medication.model';
   styleUrls: []
 })
 export class PurchaseFormComponent implements OnInit {
-  branchId = 1;
-  branchLabel = 'Main Branch';
-
   purchaseForm: FormGroup;
   suppliers: Supplier[] = [];
   medications: Medication[] = [];
+  branches: Branch[] = [];
+
+  isAdmin = false;
+  userBranchId: number | null = null;
+  userBranchName = '';
 
   loadingSuppliers = false;
   loadingMedications = false;
+  loadingBranches = false;
   saving = false;
   error = '';
 
@@ -41,19 +47,26 @@ export class PurchaseFormComponent implements OnInit {
     private inventoryService: InventoryService,
     private supplierService: SupplierService,
     private medicationService: MedicationService,
+    private branchService: BranchService,
+    private authService: AuthService,
     private router: Router,
     private toastService: ToastService
   ) {
     this.purchaseForm = this.fb.group({
       supplierId: [null, Validators.required],
-      branchId: [this.branchId, Validators.required],
+      branchId: [null, Validators.required],
       items: this.fb.array([])
     });
   }
 
   ngOnInit(): void {
+    const role = this.authService.getUserRole();
+    this.isAdmin = role === 'ADMIN';
+    this.userBranchId = this.authService.getUserBranchId();
+
     this.loadSuppliers();
     this.loadMedications();
+    this.initBranchField();
     this.addItem();
   }
 
@@ -63,7 +76,6 @@ export class PurchaseFormComponent implements OnInit {
 
   private loadSuppliers(): void {
     this.loadingSuppliers = true;
-
     this.supplierService.getAll().subscribe({
       next: (data: Supplier[]) => {
         this.suppliers = data;
@@ -71,17 +83,13 @@ export class PurchaseFormComponent implements OnInit {
       },
       error: (err: any) => {
         this.loadingSuppliers = false;
-        this.toastService.show(
-          'error',
-          err?.error?.message || err?.error || 'Failed to load suppliers'
-        );
+        this.toastService.show('error', err?.error?.message || 'Failed to load suppliers');
       }
     });
   }
 
   private loadMedications(): void {
     this.loadingMedications = true;
-
     this.medicationService.getAll().subscribe({
       next: (data: Medication[]) => {
         this.medications = data;
@@ -89,12 +97,42 @@ export class PurchaseFormComponent implements OnInit {
       },
       error: (err: any) => {
         this.loadingMedications = false;
-        this.toastService.show(
-          'error',
-          err?.error?.message || err?.error || 'Failed to load medications'
-        );
+        this.toastService.show('error', err?.error?.message || 'Failed to load medications');
       }
     });
+  }
+
+  private initBranchField(): void {
+    if (this.isAdmin) {
+      this.loadingBranches = true;
+      this.branchService.getAll().subscribe({
+        next: (data: Branch[]) => {
+          this.branches = data;
+          this.loadingBranches = false;
+          if (data.length > 0) {
+            this.purchaseForm.patchValue({ branchId: data[0].id });
+          }
+        },
+        error: (err: any) => {
+          this.loadingBranches = false;
+          this.toastService.show('error', 'Failed to load branches');
+        }
+      });
+    } else {
+      if (this.userBranchId) {
+        this.purchaseForm.patchValue({ branchId: this.userBranchId });
+        this.purchaseForm.get('branchId')?.disable();
+
+        this.branchService.getById(this.userBranchId).subscribe({
+          next: (branch: Branch) => {
+            this.userBranchName = branch.name;
+          },
+          error: () => {
+            this.userBranchName = 'Your Branch';
+          }
+        });
+      }
+    }
   }
 
   addItem(): void {
@@ -106,7 +144,6 @@ export class PurchaseFormComponent implements OnInit {
       sellingPrice: [0, [Validators.required, Validators.min(0)]],
       expiryDate: ['', Validators.required]
     });
-
     this.items.push(itemGroup);
   }
 
@@ -115,7 +152,6 @@ export class PurchaseFormComponent implements OnInit {
       this.toastService.show('warning', 'At least one purchase item is required.');
       return;
     }
-
     this.items.removeAt(index);
   }
 
@@ -127,11 +163,7 @@ export class PurchaseFormComponent implements OnInit {
     }
 
     this.saving = true;
-
-    const payload = {
-      ...this.purchaseForm.value,
-      branchId: this.branchId
-    };
+    const payload = this.purchaseForm.getRawValue();
 
     this.inventoryService.createPurchase(payload).subscribe({
       next: () => {
@@ -141,10 +173,7 @@ export class PurchaseFormComponent implements OnInit {
       },
       error: (err: any) => {
         this.saving = false;
-        this.toastService.show(
-          'error',
-          err?.error?.message || err?.error || 'Failed to create purchase'
-        );
+        this.toastService.show('error', err?.error?.message || 'Failed to create purchase');
       }
     });
   }

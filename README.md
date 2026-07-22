@@ -2,27 +2,19 @@
 
 A full‑stack enterprise web application designed to digitalise and automate pharmacy operations. The system supports multi‑branch management, role‑based access control, medication inventory with batch tracking, point of sale (POS), prescriptions, patient records, purchasing, alerts, reporting, and more.
 
-![Java](https://img.shields.io/badge/Java-17-ED8B00?logo=openjdk)
-![Spring Boot](https://img.shields.io/badge/Spring%20Boot-3.2-6DB33F?logo=springboot)
-![Angular](https://img.shields.io/badge/Angular-19-DD0031?logo=angular)
-![PostgreSQL](https://img.shields.io/badge/PostgreSQL-16-4169E1?logo=postgresql)
-![Docker](https://img.shields.io/badge/Docker-✓-2496ED?logo=docker)
-![License](https://img.shields.io/badge/license-Proprietary-red)
-
----
-
 ## ✨ Features
 
 - **🔐 Secure Authentication** – JWT‑based login with four roles: Admin, Manager, Pharmacist, Cashier
+- **🏢 Multi‑Branch Management** – Each user is assigned to a branch; all data (inventory, sales, patients, prescriptions) is automatically scoped to that branch. Admins can switch between branches.
 - **👥 User Management** – Full CRUD for users with role and branch assignment
-- **📦 Inventory & Batch Tracking** – Medications with barcodes, batches with expiry, purchase/selling prices
-- **🛒 Point of Sale (POS)** – Search medications, camera barcode scanning (ZXing), FEFO batch selection, cart, patient & prescription linking, discount, payment methods
-- **💊 Prescriptions & Patients** – Digital prescriptions with multiple medications, dosage, duration; patient records
+- **📦 Inventory & Batch Tracking** – Medications with barcodes, batches with expiry, purchase/selling prices, and branch‑specific stock views
+- **🛒 Point of Sale (POS)** – Branch‑aware medication list, camera barcode scanning (ZXing), FEFO batch selection, cart, patient & prescription linking, discount, payment methods
+- **💊 Prescriptions & Patients** – Digital prescriptions with multiple medications, dosage, duration; patient records – all filtered by branch for non‑admin users
 - **📊 Dashboard & Analytics** – Live stats cards, interactive sales trend (line) and top medications (bar) charts (ECharts), recent sales, active alerts
 - **📄 Invoices & Reports** – PDF invoice generation, CSV export for medications / patients / sales
 - **🔔 Alerts** – Automatic low‑stock and expiry alerts with email notifications to admins/managers
 - **📝 Audit Logs** – Track every create / update / delete with user, timestamp, and details
-- **🌙 Modern UI** – Responsive design, dark/light mode toggle, skeleton loaders, toast notifications, animated sidebar
+- **🌙 Modern UI** – Responsive design, dark/light mode toggle, skeleton loaders, toast notifications, animated sidebar, modern action buttons
 - **🐳 Dockerised** – One‑command startup with Docker Compose (backend + frontend + database)
 - **🔍 Barcode Scanning** – Camera scanner (ZXing) and manual input for USB scanners
 - **📧 Email Notifications** – Low‑stock / expiry alerts sent via Spring Boot Mail
@@ -33,19 +25,19 @@ A full‑stack enterprise web application designed to digitalise and automate ph
 
 ## 🛠️ Technology Stack
 
-| Layer                | Technology |
-|-----------------------|------------|
-| **Backend**           | Java 17, Spring Boot 3.2, Spring Security, Spring Data JPA (Hibernate) |
-| **Frontend**          | Angular 19 (standalone components), TypeScript, Bootstrap 5, Font Awesome |
-| **Database**          | PostgreSQL 16 |
-| **Authentication**    | JWT (JSON Web Tokens), BCrypt |
-| **PDF**                | iText 8 |
-| **Charts**             | ECharts (via ngx-echarts) |
-| **Barcode**            | ZXing (@zxing/ngx-scanner, @zxing/library) |
-| **Email**              | Spring Boot Mail (JavaMailSender) |
+| Layer               | Technology |
+|----------------------|------------|
+| **Backend**          | Java 17, Spring Boot 3.2, Spring Security, Spring Data JPA (Hibernate) |
+| **Frontend**         | Angular 19 (standalone components), TypeScript, Bootstrap 5, Font Awesome |
+| **Database**         | PostgreSQL 16 |
+| **Authentication**   | JWT (JSON Web Tokens), BCrypt |
+| **PDF**               | iText 8 |
+| **Charts**            | ECharts (via ngx-echarts) |
+| **Barcode**           | ZXing (@zxing/ngx-scanner, @zxing/library) |
+| **Email**             | Spring Boot Mail (JavaMailSender) |
 | **Build**              | Maven (backend), Angular CLI (frontend) |
-| **Containerisation**   | Docker, Docker Compose |
-| **Testing**            | JUnit 5, Mockito (backend) |
+| **Containerisation**  | Docker, Docker Compose |
+| **Testing**           | JUnit 5, Mockito (backend) |
 
 ---
 
@@ -78,7 +70,8 @@ Angular Frontend ↔ REST API (JSON) ↔ Spring Boot Backend ↔ PostgreSQL
 docker compose up -d --build
 ```
 
-Access the application at **http://localhost**
+Access the application at `http://localhost`
+
 Login: `admin@pharmacy.com` / `admin123`
 
 ### 2. Development mode (run services separately)
@@ -97,41 +90,47 @@ npm install
 ng serve
 ```
 
-Frontend: **http://localhost:4200**
+Frontend: `http://localhost:4200`
 
 ---
 
 ## 📖 User Roles
 
-| Role           | Access |
-|-----------------|--------|
-| **Admin**       | Full system access – branches, users, suppliers, medications, inventory, POS, prescriptions, patients, reports, alerts, audit logs |
-| **Manager**     | Inventory, purchases, suppliers, medications, POS, patients, reports, alerts |
-| **Pharmacist**  | POS, prescriptions, patients, medications, alerts |
-| **Cashier**     | Dashboard, POS |
+| Role | Access |
+|------|--------|
+| **Admin** | Full system access – all branches, users, suppliers, medications, inventory, POS, prescriptions, patients, reports, alerts, audit logs |
+| **Manager** | Own branch: inventory, purchases, suppliers, medications, POS, patients, reports, alerts |
+| **Pharmacist** | Own branch: POS, prescriptions, patients, medications, alerts |
+| **Cashier** | Own branch: Dashboard, POS |
+
+**Branch‑scoping:** Non‑admin users automatically see only data belonging to their own branch. Admins can switch branches via the selector in the inventory and POS pages.
 
 ---
 
 ## 📸 Screenshots
 
-![Login Page](screenshots/loginPage.png)
-![Dashboard](screenshots/dashboardPage.png)
-![POS](screenshots/PointOfSale.png) 
+![Login Page](screenshots/login.png)
+![Dashboard](screenshots/dashboard.png)
+![Users](screenshots/users.png)
+![POS](screenshots/pos.png) 
 ![Reports](screenshots/reports.png)
 ![Alerts](screenshots/alerts.png)
-![Inventory](screenshots/inventory&purchase.png)
+![Stocks](screenshots/stocks.png)
+![Purchases](screenshots/purchases.png)
 ![Prescriptions](screenshots/prescriptions.png)
 ![Medications](screenshots/medications.png)
 ![Audit Logs](screenshots/auditlogs.png)
-![Dark Mode View](screenshots/darkmode.png)
-
-
+![Profile](screenshots/profile.png)
+![Branches](screenshots/branches.png)
+![Patients](screenshots/patients.png)
+![Suppliers](screenshots/suppliers.png)
+![Light Mode View](screenshots/lightmode.png)
 
 ---
 
 ## 📖 Documentation
 
-- **Swagger UI:** http://localhost:8080/swagger-ui/index.html (after backend starts)
+- **Swagger UI:** `http://localhost:8080/swagger-ui/index.html` (after backend starts)
 - **UML Diagrams & ERD:** located in `docs/diagrams.md`
 - **Presentation outline:** `docs/presentation.md`
 
@@ -141,10 +140,11 @@ Frontend: **http://localhost:4200**
 
 The system is fully containerised. For production:
 
-- Set environment variables for database credentials and JWT secret.
-- Use a reverse proxy (Nginx / Traefik) with HTTPS.
-- Optionally deploy to cloud platforms (AWS ECS, Azure, etc.).
-- Contact the developer for a detailed deployment guide.
+1. Set environment variables for database credentials and JWT secret.
+2. Use a reverse proxy (Nginx / Traefik) with HTTPS.
+3. Optionally deploy to cloud platforms (AWS ECS, Azure, etc.).
+
+Contact the developer for a detailed deployment guide.
 
 ---
 

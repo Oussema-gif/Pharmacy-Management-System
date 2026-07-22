@@ -1,9 +1,10 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { RouterModule, ActivatedRoute } from '@angular/router';
+import { RouterModule } from '@angular/router';
 import { PatientService } from '../../core/services/patient.service';
 import { ToastService } from '../../core/services/toast.service';
 import { ExportService } from '../../core/services/export.service';
+import { AuthService } from '../../core/auth.service';
 import { Patient } from '../../core/models/patient.model';
 
 @Component({
@@ -22,20 +23,25 @@ export class PatientListComponent implements OnInit {
     private patientService: PatientService,
     private toastService: ToastService,
     private exportService: ExportService,
-    private route: ActivatedRoute
+    private authService: AuthService
   ) {}
 
   ngOnInit(): void {
-    this.route.queryParams.subscribe(() => {
-      this.loadPatients();
-    });
+    this.loadPatients();
   }
 
   loadPatients(): void {
     this.loading = true;
     this.error = '';
 
-    this.patientService.getAll().subscribe({
+    const isAdmin = this.authService.getUserRole() === 'ADMIN';
+    const branchId = this.authService.getUserBranchId();
+
+    const request = isAdmin
+      ? this.patientService.getAll()
+      : this.patientService.getAll(branchId!);
+
+    request.subscribe({
       next: (data: Patient[]) => {
         this.patients = data;
         this.loading = false;
@@ -49,13 +55,10 @@ export class PatientListComponent implements OnInit {
   }
 
   deletePatient(id: number): void {
-    if (!confirm('Are you sure you want to delete this patient?')) {
-      return;
-    }
-
+    if (!confirm('Are you sure you want to delete this patient?')) return;
     this.patientService.delete(id).subscribe({
       next: () => {
-        this.patients = this.patients.filter((patient) => patient.id !== id);
+        this.patients = this.patients.filter(p => p.id !== id);
         this.toastService.show('success', 'Patient deleted successfully');
       },
       error: (err: any) => {

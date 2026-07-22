@@ -1,21 +1,30 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { FormsModule } from '@angular/forms';
 import { RouterModule } from '@angular/router';
 import { InventoryService } from '../../core/services/inventory.service';
+import { BranchService } from '../../core/services/branch.service';
+import { AuthService } from '../../core/auth.service';               // ✅ new
 import { ToastService } from '../../core/services/toast.service';
 import { Batch } from '../../core/models/batch.model';
 import { Purchase } from '../../core/models/purchase.model';
+import { Branch } from '../../core/models/branch.model';
 
 @Component({
   selector: 'app-inventory-list',
   standalone: true,
-  imports: [CommonModule, RouterModule],
+  imports: [CommonModule, RouterModule, FormsModule],
   templateUrl: './inventory-list.component.html',
   styleUrls: []
 })
 export class InventoryListComponent implements OnInit {
-  branchId = 1;
-  branchName = 'Main Branch';
+  branches: Branch[] = [];
+  selectedBranchId: number | null = null;
+
+  // ── role helper ──
+  isAdmin = false;
+  userBranchId: number | null = null;
+  userBranchName = '';
 
   stock: Batch[] = [];
   purchases: Purchase[] = [];
@@ -23,23 +32,78 @@ export class InventoryListComponent implements OnInit {
 
   loadingStock = false;
   loadingPurchases = false;
+  loadingBranches = false;
   error = '';
 
   constructor(
     private inventoryService: InventoryService,
+    private branchService: BranchService,
+    private authService: AuthService,             // ✅ injected
     private toastService: ToastService
   ) {}
 
   ngOnInit(): void {
-    this.loadStock();
-    this.loadPurchases();
+    this.isAdmin = this.authService.getUserRole() === 'ADMIN';
+    this.userBranchId = this.authService.getUserBranchId();
+    this.loadBranches();
+  }
+
+  private loadBranches(): void {
+    this.loadingBranches = true;
+
+    if (this.isAdmin) {
+      // Admin: load all branches and let them switch
+      this.branchService.getAll().subscribe({
+        next: (data: Branch[]) => {
+          this.branches = data;
+          this.loadingBranches = false;
+          if (data.length > 0) {
+            this.selectedBranchId = data[0].id!;
+            this.loadStock();
+            this.loadPurchases();
+          }
+        },
+        error: (err: any) => {
+          this.loadingBranches = false;
+          this.error = 'Failed to load branches';
+          this.toastService.show('error', this.error);
+        }
+      });
+    } else {
+      // Non‑admin: only their own branch
+      if (this.userBranchId) {
+        this.branchService.getById(this.userBranchId).subscribe({
+          next: (branch: Branch) => {
+            this.branches = [branch];          // put it in the array for the dropdown
+            this.userBranchName = branch.name;
+            this.selectedBranchId = branch.id!;
+            this.loadingBranches = false;
+            this.loadStock();
+            this.loadPurchases();
+          },
+          error: (err: any) => {
+            this.loadingBranches = false;
+            this.error = 'Failed to load your branch';
+            this.toastService.show('error', this.error);
+          }
+        });
+      }
+    }
+  }
+
+  onBranchChange(): void {
+    if (this.selectedBranchId) {
+      this.loadStock();
+      this.loadPurchases();
+    }
   }
 
   loadStock(): void {
+    if (!this.selectedBranchId) return;
     this.loadingStock = true;
     this.error = '';
 
-    this.inventoryService.getStockByBranch(this.branchId).subscribe({
+    this.inventoryService.getStockByBranch(this.selectedBranchId).subscribe({
       next: (data: Batch[]) => {
         this.stock = data.filter((b: Batch) => b.quantity > 0);
         this.loadingStock = false;
@@ -54,10 +118,11 @@ export class InventoryListComponent implements OnInit {
   }
 
   loadPurchases(): void {
+    if (!this.selectedBranchId) return;
     this.loadingPurchases = true;
     this.error = '';
 
-    this.inventoryService.getPurchasesByBranch(this.branchId).subscribe({
+    this.inventoryService.getPurchasesByBranch(this.selectedBranchId).subscribe({
       next: (data: Purchase[]) => {
         this.purchases = data;
         this.loadingPurchases = false;
@@ -88,14 +153,15 @@ export class InventoryListComponent implements OnInit {
   }
 
   refresh(): void {
-    if (this.activeTab === 'stock') {
-      this.loadStock();
-    } else {
-      this.loadPurchases();
-    }
+    this.loadStock();
+    this.loadPurchases();
   }
 
   get scopeLabel(): string {
-    return `Branch: ${this.branchName}`;
+    if (this.isAdmin) {
+      const selectedBranch = this.branches.find(b => b.id === this.selectedBranchId);
+      return selectedBranch ? `Branch: ${selectedBranch.name}` : 'No branch selected';
+    }
+    return this.userBranchName ? `Branch: ${this.userBranchName}` : 'Your Branch';
   }
 }

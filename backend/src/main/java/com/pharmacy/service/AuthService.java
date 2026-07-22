@@ -35,10 +35,14 @@ public class AuthService {
         SecurityContextHolder.getContext().setAuthentication(authentication);
 
         UserDetailsImpl userDetails = (UserDetailsImpl) authentication.getPrincipal();
+
+        // ✅ Include branch ID in the token
+        Long branchId = userDetails.getBranch() != null ? userDetails.getBranch().getId() : null;
         String jwt = jwtUtils.generateToken(
                 userDetails.getEmail(),
                 userDetails.getRole().name(),
-                userDetails.getFullName()
+                userDetails.getFullName(),
+                branchId
         );
 
         return new JwtResponse(jwt,

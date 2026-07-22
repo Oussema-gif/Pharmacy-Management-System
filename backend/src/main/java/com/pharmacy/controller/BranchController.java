@@ -17,18 +17,18 @@ public class BranchController {
     @Autowired
     private BranchService branchService;
 
+    // Allow any authenticated user to view branches (needed by Manager, Pharmacist)
     @GetMapping
-    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<List<BranchDto>> getAll() {
         return ResponseEntity.ok(branchService.getAllBranches());
     }
 
     @GetMapping("/{id}")
-    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<BranchDto> getById(@PathVariable Long id) {
         return ResponseEntity.ok(branchService.getBranchById(id));
     }
 
+    // Only Admins can create, update, or delete branches
     @PostMapping
     @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<BranchDto> create(@Valid @RequestBody BranchDto dto) {

@@ -1,8 +1,10 @@
 package com.pharmacy.service;
 
 import com.pharmacy.dto.MedicationDto;
+import com.pharmacy.model.Batch;
 import com.pharmacy.model.Branch;
 import com.pharmacy.model.Medication;
+import com.pharmacy.repository.BatchRepository;
 import com.pharmacy.repository.BranchRepository;
 import com.pharmacy.repository.MedicationRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -20,9 +22,22 @@ public class MedicationService {
     @Autowired
     private BranchRepository branchRepository;
 
+    @Autowired
+    private BatchRepository batchRepository;
+
     public List<MedicationDto> getAll() {
         return medicationRepository.findAll()
                 .stream()
+                .map(this::toDto)
+                .collect(Collectors.toList());
+    }
+
+    /** Returns distinct medications that have stock in the given branch */
+    public List<MedicationDto> getByBranch(Long branchId) {
+        return batchRepository.findByBranchId(branchId).stream()
+                .filter(b -> b.getQuantity() > 0)
+                .map(Batch::getMedication)
+                .distinct()
                 .map(this::toDto)
                 .collect(Collectors.toList());
     }

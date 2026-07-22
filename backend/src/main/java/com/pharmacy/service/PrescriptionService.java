@@ -2,17 +2,10 @@ package com.pharmacy.service;
 
 import com.pharmacy.dto.PrescriptionDto;
 import com.pharmacy.dto.PrescriptionItemDto;
-import com.pharmacy.model.Branch;
-import com.pharmacy.model.Medication;
-import com.pharmacy.model.Patient;
-import com.pharmacy.model.Prescription;
-import com.pharmacy.model.PrescriptionItem;
-import com.pharmacy.repository.MedicationRepository;
-import com.pharmacy.repository.PatientRepository;
-import com.pharmacy.repository.PrescriptionRepository;
+import com.pharmacy.model.*;
+import com.pharmacy.repository.*;
 import com.pharmacy.security.BranchAccessService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -37,13 +30,12 @@ public class PrescriptionService {
         Patient patient = patientRepository.findById(dto.getPatientId())
                 .orElseThrow(() -> new RuntimeException("Patient not found"));
 
-        Long patientBranchId = patient.getBranch().getId();
         Long accessibleBranchId = branchAccessService.resolveAccessibleBranchId(
                 currentUserEmail,
-                patientBranchId
+                patient.getBranch() != null ? patient.getBranch().getId() : null
         );
 
-        if (!patientBranchId.equals(accessibleBranchId)) {
+        if (!patient.getBranch().getId().equals(accessibleBranchId)) {
             throw new RuntimeException("You are not allowed to create a prescription for this patient");
         }
 
@@ -58,7 +50,6 @@ public class PrescriptionService {
         List<PrescriptionItem> items = dto.getItems().stream().map(itemDto -> {
             Medication med = medicationRepository.findById(itemDto.getMedicationId())
                     .orElseThrow(() -> new RuntimeException("Medication not found"));
-
             PrescriptionItem item = new PrescriptionItem();
             item.setPrescription(finalPrescription);
             item.setMedication(med);
@@ -73,17 +64,18 @@ public class PrescriptionService {
     }
 
     public List<PrescriptionDto> getAll(String currentUserEmail) {
-        boolean admin = branchAccessService.isAdmin(currentUserEmail);
-
-        if (admin) {
+        if (branchAccessService.isAdmin(currentUserEmail)) {
             return prescriptionRepository.findAll().stream()
                     .map(this::toDto)
                     .collect(Collectors.toList());
         }
 
-        Long branchId = branchAccessService.getCurrentUserBranch(currentUserEmail).getId();
+        Branch userBranch = branchAccessService.getCurrentUserBranch(currentUserEmail);
+        if (userBranch == null) {
+            throw new RuntimeException("You are not assigned to any branch");
+        }
 
-        return prescriptionRepository.findByBranchIdOrderByDateDescIdDesc(branchId).stream()
+        return prescriptionRepository.findByBranchIdOrderByDateDescIdDesc(userBranch.getId()).stream()
                 .map(this::toDto)
                 .collect(Collectors.toList());
     }
@@ -94,18 +86,14 @@ public class PrescriptionService {
 
         Long accessibleBranchId = branchAccessService.resolveAccessibleBranchId(
                 currentUserEmail,
-                prescription.getBranch().getId()
+                prescription.getBranch() != null ? prescription.getBranch().getId() : null
         );
 
         if (!prescription.getBranch().getId().equals(accessibleBranchId)) {
             throw new RuntimeException("You are not allowed to delete this prescription");
         }
 
-        try {
-            prescriptionRepository.deleteById(id);
-        } catch (DataIntegrityViolationException e) {
-            throw new RuntimeException("Prescription is in use and cannot be deleted.");
-        }
+        prescriptionRepository.delete(prescription);
     }
 
     private PrescriptionDto toDto(Prescription p) {

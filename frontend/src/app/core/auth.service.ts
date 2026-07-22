@@ -65,4 +65,16 @@ export class AuthService {
       return null;
     }
   }
+
+  getUserBranchId(): number | null {
+    const token = this.getToken();
+    if (!token) return null;
+    try {
+      const payload = token.split('.')[1];
+      const decoded = JSON.parse(atob(payload));
+      return decoded?.branchId || null;
+    } catch {
+      return null;
+    }
+  }
 }

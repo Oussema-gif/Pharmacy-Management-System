@@ -27,11 +27,12 @@ public class JwtUtils {
         return Keys.hmacShaKeyFor(jwtSecret.getBytes(StandardCharsets.UTF_8));
     }
 
-    public String generateToken(String email, String role, String fullName) {
+    public String generateToken(String email, String role, String fullName, Long branchId) {
         return Jwts.builder()
                 .subject(email)
                 .claim("role", role)
                 .claim("fullName", fullName)
+                .claim("branchId", branchId) // ← new claim
                 .issuedAt(new Date())
                 .expiration(new Date(System.currentTimeMillis() + jwtExpirationMs))
                 .signWith(key())

@@ -27,6 +27,12 @@ public class PatientService {
                 .collect(Collectors.toList());
     }
 
+    public List<PatientDto> getByBranch(Long branchId) {
+        return patientRepository.findByBranchId(branchId).stream()
+                .map(this::toDto)
+                .collect(Collectors.toList());
+    }
+
     public PatientDto getById(Long id) {
         Patient patient = patientRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Patient not found"));
@@ -40,8 +46,8 @@ public class PatientService {
         patient.setEmail(dto.getEmail());
         patient.setAddress(dto.getAddress());
 
-        Branch branch = branchRepository.findById(1L)
-                .orElseThrow(() -> new RuntimeException("Default branch not found"));
+        Branch branch = branchRepository.findById(dto.getBranchId())
+                .orElseThrow(() -> new RuntimeException("Branch not found"));
         patient.setBranch(branch);
 
         patient = patientRepository.save(patient);

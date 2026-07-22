@@ -20,8 +20,14 @@
               <td>{{ branch.address || '-' }}</td>
               <td>{{ branch.phone || '-' }}</td>
               <td class="text-end">
-                <button class="btn btn-sm btn-warning me-1" [routerLink]="['/branches/edit', branch.id]">Edit</button>
-                <button class="btn btn-sm btn-danger" (click)="deleteBranch(branch.id!)">Delete</button>
+                <div class="action-buttons">
+                  <button class="btn-action btn-edit" [routerLink]="['/branches/edit', branch.id]" title="Edit">
+                    <i class="fas fa-pen"></i>
+                  </button>
+                  <button class="btn-action btn-delete" (click)="deleteBranch(branch.id!)" title="Delete">
+                    <i class="fas fa-trash"></i>
+                  </button>
+                </div>
               </td>
             </tr>
           </tbody>

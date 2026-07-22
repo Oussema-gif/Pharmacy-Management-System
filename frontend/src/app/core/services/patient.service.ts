@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpParams } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { Patient } from '../models/patient.model';
 
@@ -9,8 +9,12 @@ export class PatientService {
 
   constructor(private http: HttpClient) {}
 
-  getAll(): Observable<Patient[]> {
-    return this.http.get<Patient[]>(this.baseUrl);
+  getAll(branchId?: number): Observable<Patient[]> {
+    let params = new HttpParams();
+    if (branchId) {
+      params = params.set('branchId', branchId.toString());
+    }
+    return this.http.get<Patient[]>(this.baseUrl, { params });
   }
 
   getById(id: number): Observable<Patient> {

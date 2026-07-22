@@ -21,8 +21,14 @@
               <td><span class="badge bg-light text-dark">{{ user.role }}</span></td>
               <td>{{ user.branchName || '-' }}</td>
               <td class="text-end">
-                <button class="btn btn-sm btn-warning me-1" [routerLink]="['/users/edit', user.id]">Edit</button>
-                <button class="btn btn-sm btn-danger" (click)="deleteUser(user.id!)">Delete</button>
+                <div class="action-buttons">
+                  <button class="btn-action btn-edit" [routerLink]="['/users/edit', user.id]" title="Edit">
+                    <i class="fas fa-pen"></i>
+                  </button>
+                  <button class="btn-action btn-delete" (click)="deleteUser(user.id!)" title="Delete">
+                    <i class="fas fa-trash"></i>
+                  </button>
+                </div>
               </td>
             </tr>
           </tbody>

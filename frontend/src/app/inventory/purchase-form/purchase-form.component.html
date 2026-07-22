@@ -3,7 +3,7 @@
     <div>
       <h2 class="fw-bold mb-1">New Purchase Order</h2>
       <p class="text-muted mb-0">
-        Branch: {{ branchLabel }}
+        {{ isAdmin ? 'Select supplier, branch, and add medication items.' : 'Select supplier and add medication items.' }}
       </p>
     </div>
   </div>
@@ -16,6 +16,7 @@
     <div class="card-body">
       <form [formGroup]="purchaseForm" (ngSubmit)="onSubmit()">
         <div class="row mb-4">
+          <!-- Supplier -->
           <div class="col-md-6">
             <label class="form-label">Supplier *</label>
             <select class="form-select" formControlName="supplierId">
@@ -24,14 +25,22 @@
             </select>
           </div>
 
+          <!-- Branch -->
           <div class="col-md-6">
-            <label class="form-label">Branch</label>
-            <input
-              type="text"
-              class="form-control"
-              [value]="branchLabel"
-              disabled
-            />
+            <label class="form-label">Branch *</label>
+
+            <!-- Admin: dropdown with all branches -->
+            <select *ngIf="isAdmin" class="form-select" formControlName="branchId">
+              <option [ngValue]="null" disabled>-- Select Branch --</option>
+              <option *ngFor="let b of branches" [ngValue]="b.id">{{ b.name }}</option>
+            </select>
+
+            <!-- Non‑admin: disabled field showing own branch -->
+            <input *ngIf="!isAdmin"
+                   type="text"
+                   class="form-control"
+                   [value]="userBranchName || 'Your Branch'"
+                   disabled />
           </div>
         </div>
 

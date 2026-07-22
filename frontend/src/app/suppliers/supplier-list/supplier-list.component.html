@@ -21,8 +21,14 @@
               <td>{{ s.phone || '-' }}</td>
               <td>{{ s.email || '-' }}</td>
               <td class="text-end">
-                <button class="btn btn-sm btn-warning me-1" [routerLink]="['/suppliers/edit', s.id]">Edit</button>
-                <button class="btn btn-sm btn-danger" (click)="deleteSupplier(s.id!)">Delete</button>
+                <div class="action-buttons">
+                  <button class="btn-action btn-edit" [routerLink]="['/suppliers/edit', s.id]" title="Edit">
+                    <i class="fas fa-pen"></i>
+                  </button>
+                  <button class="btn-action btn-delete" (click)="deleteSupplier(s.id!)" title="Delete">
+                    <i class="fas fa-trash"></i>
+                  </button>
+                </div>
               </td>
             </tr>
           </tbody>

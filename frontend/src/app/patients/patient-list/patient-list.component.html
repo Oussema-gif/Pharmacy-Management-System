@@ -38,12 +38,14 @@
               <td>{{ p.address || '-' }}</td>
               <td>{{ p.branchName || '-' }}</td>
               <td class="text-end">
-                <button class="btn btn-sm btn-warning me-1" [routerLink]="['/patients/edit', p.id]">
-                  Edit
-                </button>
-                <button class="btn btn-sm btn-danger" (click)="deletePatient(p.id!)">
-                  Delete
-                </button>
+                <div class="action-buttons">
+                  <button class="btn-action btn-edit" [routerLink]="['/patients/edit', p.id]" title="Edit">
+                    <i class="fas fa-pen"></i>
+                  </button>
+                  <button class="btn-action btn-delete" (click)="deletePatient(p.id!)" title="Delete">
+                    <i class="fas fa-trash"></i>
+                  </button>
+                </div>
               </td>
             </tr>
           </tbody>

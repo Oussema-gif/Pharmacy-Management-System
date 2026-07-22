@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpParams } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { Prescription } from '../models/prescription.model';
 
@@ -9,8 +9,12 @@ export class PrescriptionService {
 
   constructor(private http: HttpClient) {}
 
-  getAll(): Observable<Prescription[]> {
-    return this.http.get<Prescription[]>(this.baseUrl);
+  getAll(branchId?: number): Observable<Prescription[]> {
+    let params = new HttpParams();
+    if (branchId) {
+      params = params.set('branchId', branchId.toString());
+    }
+    return this.http.get<Prescription[]>(this.baseUrl, { params });
   }
 
   create(prescription: Prescription): Observable<Prescription> {

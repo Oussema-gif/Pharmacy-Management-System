@@ -79,7 +79,7 @@ class AuthServiceTest {
         when(authenticationManager.authenticate(any(UsernamePasswordAuthenticationToken.class)))
                 .thenReturn(authentication);
         when(authentication.getPrincipal()).thenReturn(userDetails);
-        when(jwtUtils.generateToken("admin@pharmacy.com", "ADMIN", "System Administrator"))
+        when(jwtUtils.generateToken("admin@pharmacy.com", "ADMIN", "System Administrator", null))
                 .thenReturn("mocked-jwt-token");
 
         JwtResponse response = authService.authenticateUser(loginRequest);

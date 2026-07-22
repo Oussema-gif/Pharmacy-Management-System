@@ -1,72 +1,45 @@
 <div class="page-container">
   <div class="d-flex justify-content-between align-items-center mb-4">
-    <div>
-      <h2 class="fw-bold mb-1">Medication Catalog</h2>
-      <p class="text-muted mb-0" *ngIf="scopeLabel">{{ scopeLabel }}</p>
-    </div>
-
+    <h2 class="fw-bold">Medication Catalog</h2>
     <div class="d-flex gap-2">
-      <button
-        class="btn btn-outline-success"
-        (click)="exportMedications()"
-        [disabled]="loadingProfile || loading || medications.length === 0"
-      >
+      <button class="btn btn-outline-success" (click)="exportMedications()" [disabled]="medications.length === 0">
         <i class="fas fa-download me-2"></i> Export CSV
       </button>
-
       <button class="btn btn-primary" [routerLink]="['/medications/new']">
         <i class="fas fa-plus me-2"></i> Add New Medication
       </button>
     </div>
   </div>
-
-  <div *ngIf="loadingProfile || loading" class="alert alert-secondary">
-    Loading medications...
-  </div>
-
-  <div *ngIf="error && !loadingProfile && !loading" class="alert alert-danger">
-    {{ error }}
-  </div>
-
-  <div class="card" *ngIf="!loadingProfile && !loading && !error">
+  <div *ngIf="error" class="alert alert-danger">{{ error }}</div>
+  <div class="card">
     <div class="card-body p-0">
       <div class="table-responsive">
         <table class="table mb-0" *ngIf="medications.length > 0">
           <thead>
-            <tr>
-              <th>ID</th>
-              <th>Name</th>
-              <th>Generic Name</th>
-              <th>Category</th>
-              <th>Unit</th>
-              <th>Barcode</th>
-              <th>Branch</th>
-              <th class="text-end">Actions</th>
-            </tr>
+            <tr><th>ID</th><th>Name</th><th>Generic Name</th><th>Category</th><th>Unit</th><th class="text-end">Actions</th></tr>
           </thead>
           <tbody>
-            <tr *ngFor="let med of medications; trackBy: trackByMedicationId">
+            <tr *ngFor="let med of medications">
               <td>{{ med.id }}</td>
               <td>{{ med.name }}</td>
               <td>{{ med.genericName || '-' }}</td>
               <td>{{ med.category || '-' }}</td>
               <td>{{ med.unit || '-' }}</td>
-              <td>{{ med.barcode || '-' }}</td>
-              <td>{{ med.branchName || med.branchId || '-' }}</td>
               <td class="text-end">
-                <button class="btn btn-sm btn-warning me-1" [routerLink]="['/medications/edit', med.id]">
-                  Edit
-                </button>
-                <button class="btn btn-sm btn-danger" (click)="deleteMedication(med.id!)">
-                  Delete
-                </button>
+                <div class="action-buttons">
+                  <button class="btn-action btn-edit" [routerLink]="['/medications/edit', med.id]" title="Edit">
+                    <i class="fas fa-pen"></i>
+                  </button>
+                  <button class="btn-action btn-delete" (click)="deleteMedication(med.id!)" title="Delete">
+                    <i class="fas fa-trash"></i>
+                  </button>
+                </div>
               </td>
             </tr>
           </tbody>
         </table>
       </div>
-
-      <p *ngIf="medications.length === 0" class="text-muted p-3">No medications found.</p>
+      <p *ngIf="medications.length === 0 && !error" class="text-muted p-3">No medications found.</p>
     </div>
   </div>
 </div>

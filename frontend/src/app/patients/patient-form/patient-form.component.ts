@@ -10,9 +10,9 @@ import {
 import { ActivatedRoute, Router, RouterModule } from '@angular/router';
 import { PatientService } from '../../core/services/patient.service';
 import { ToastService } from '../../core/services/toast.service';
+import { AuthService } from '../../core/auth.service';
 import { Patient } from '../../core/models/patient.model';
 import { Branch } from '../../core/models/branch.model';
-import { UserService } from '../../core/services/user.service';
 import { BranchService } from '../../core/services/branch.service';
 
 @Component({
@@ -38,7 +38,7 @@ export class PatientFormComponent implements OnInit {
     private toastService: ToastService,
     private route: ActivatedRoute,
     private router: Router,
-    private userService: UserService,
+    private authService: AuthService,
     private branchService: BranchService
   ) {
     this.patientForm = this.fb.group({
@@ -53,36 +53,24 @@ export class PatientFormComponent implements OnInit {
   ngOnInit(): void {
     const idParam = this.route.snapshot.paramMap.get('id');
     this.patientId = idParam ? Number(idParam) : null;
-    this.loadCurrentUser();
-  }
 
-  private loadCurrentUser(): void {
-    this.userService.getProfile().subscribe({
-      next: (user: any) => {
-        this.isAdmin = user.role === 'ADMIN';
+    const role = this.authService.getUserRole();
+    this.isAdmin = role === 'ADMIN';
 
-        const branchControl = this.patientForm.get('branchId');
+    if (this.isAdmin) {
+      this.patientForm.get('branchId')?.setValidators([Validators.required]);
+      this.loadBranches();
+    } else {
+      // Non‑admin: automatically set branch from token
+      const branchId = this.authService.getUserBranchId();
+      this.patientForm.patchValue({ branchId: branchId });
+      this.patientForm.get('branchId')?.clearValidators();
+    }
 
-        if (this.isAdmin) {
-          branchControl?.setValidators([Validators.required]);
-          branchControl?.updateValueAndValidity();
-          this.loadBranches();
-        } else {
-          branchControl?.clearValidators();
-          branchControl?.setValue(null);
-          branchControl?.updateValueAndValidity();
-        }
-
-        if (this.patientId) {
-          this.isEdit = true;
-          this.loadPatient();
-        }
-      },
-      error: () => {
-        this.error = 'Failed to load user profile';
-        this.toastService.show('error', this.error);
-      }
-    });
+    if (this.patientId) {
+      this.isEdit = true;
+      this.loadPatient();
+    }
   }
 
   private loadBranches(): void {
@@ -98,7 +86,6 @@ export class PatientFormComponent implements OnInit {
 
   private loadPatient(): void {
     this.loading = true;
-
     this.patientService.getById(this.patientId!).subscribe({
       next: (patient: Patient) => {
         this.patientForm.patchValue({

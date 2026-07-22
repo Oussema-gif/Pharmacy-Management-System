@@ -5,7 +5,17 @@
       <p class="text-muted mb-0">{{ scopeLabel }}</p>
     </div>
 
-    <div class="d-flex gap-2">
+    <div class="d-flex gap-2 align-items-center">
+      <!-- Branch selector: dropdown for admin, disabled label for others -->
+      <ng-container *ngIf="isAdmin; else userBranchLabel">
+        <select class="form-select" style="width: auto;" [(ngModel)]="selectedBranchId" (change)="onBranchChange()">
+          <option *ngFor="let b of branches" [ngValue]="b.id">{{ b.name }}</option>
+        </select>
+      </ng-container>
+      <ng-template #userBranchLabel>
+        <input type="text" class="form-control" style="width: auto;" [value]="userBranchName || 'Your Branch'" disabled />
+      </ng-template>
+
       <button class="btn btn-outline-secondary" (click)="refresh()" [disabled]="loadingStock || loadingPurchases">
         <i class="fas fa-sync-alt me-2"></i> Refresh
       </button>
@@ -37,6 +47,7 @@
             <table class="table mb-0">
               <thead>
                 <tr>
+                  <th>Branch</th>
                   <th>Medication</th>
                   <th>Batch #</th>
                   <th>Qty</th>
@@ -54,6 +65,7 @@
                   <td><div class="skeleton skeleton-text"></div></td>
                   <td><div class="skeleton skeleton-text"></div></td>
                   <td><div class="skeleton skeleton-text"></div></td>
+                  <td><div class="skeleton skeleton-text"></div></td>
                   <td><div class="skeleton skeleton-button"></div></td>
                 </tr>
               </tbody>
@@ -64,6 +76,7 @@
             <table class="table mb-0" *ngIf="stock.length > 0">
               <thead>
                 <tr>
+                  <th>Branch</th>
                   <th>Medication</th>
                   <th>Batch #</th>
                   <th>Qty</th>
@@ -75,6 +88,7 @@
               </thead>
               <tbody>
                 <tr *ngFor="let batch of stock" [class.table-warning]="batch.quantity <= 10">
+                  <td>{{ batch.branchName }}</td>
                   <td>{{ batch.medicationName }}</td>
                   <td>{{ batch.batchNumber }}</td>
                   <td>{{ batch.quantity }}</td>
@@ -82,7 +96,11 @@
                   <td>{{ batch.purchasePrice | currency }}</td>
                   <td>{{ batch.sellingPrice | currency }}</td>
                   <td class="text-end">
-                    <button class="btn btn-sm btn-warning" (click)="editBatch(batch)">Edit</button>
+                    <div class="action-buttons">
+                      <button class="btn-action btn-edit" (click)="editBatch(batch)" title="Edit">
+                        <i class="fas fa-pen"></i>
+                      </button>
+                    </div>
                   </td>
                 </tr>
               </tbody>

@@ -32,18 +32,10 @@ export class MedicationListComponent implements OnInit {
 
   ngOnInit(): void {
     this.loadCurrentUser();
-
-    this.route.queryParams.subscribe(() => {
-      if (!this.loadingProfile) {
-        this.loadMedications();
-      }
-    });
   }
 
   private loadCurrentUser(): void {
     this.loadingProfile = true;
-    this.error = '';
-
     this.userService.getProfile().subscribe({
       next: (user: CurrentUser) => {
         this.currentUser = user;
@@ -52,8 +44,7 @@ export class MedicationListComponent implements OnInit {
       },
       error: (err: any) => {
         this.loadingProfile = false;
-        this.error =
-          err?.error?.message || err?.error || 'Failed to load user profile';
+        this.error = err?.error?.message || 'Failed to load user profile';
         this.toastService.show('error', this.error);
       }
     });
@@ -63,31 +54,35 @@ export class MedicationListComponent implements OnInit {
     this.loading = true;
     this.error = '';
 
-    this.medicationService.getAll().subscribe({
+    const isAdmin = this.currentUser?.role === 'ADMIN';
+    const branchId = this.currentUser?.branchId;
+
+    const request = isAdmin
+      ? this.medicationService.getAll()   // admin sees all
+      : this.medicationService.getAll(branchId!); // non‑admin sees only own branch
+
+    request.subscribe({
       next: (data: Medication[]) => {
         this.medications = data;
         this.loading = false;
       },
       error: (err: any) => {
         this.loading = false;
-        this.error = err?.error?.message || err?.error || 'Failed to load medications';
+        this.error = err?.error?.message || 'Failed to load medications';
         this.toastService.show('error', this.error);
       }
     });
   }
 
   deleteMedication(id: number): void {
-    if (!confirm('Are you sure you want to delete this medication?')) {
-      return;
-    }
-
+    if (!confirm('Are you sure you want to delete this medication?')) return;
     this.medicationService.delete(id).subscribe({
       next: () => {
         this.medications = this.medications.filter(m => m.id !== id);
         this.toastService.show('success', 'Medication deleted successfully');
       },
       error: (err: any) => {
-        const msg = err?.error?.message || err?.error || 'Cannot delete medication.';
+        const msg = err?.error?.message || 'Cannot delete medication.';
         this.toastService.show('error', msg);
       }
     });
@@ -104,16 +99,12 @@ export class MedicationListComponent implements OnInit {
   }
 
   get scopeLabel(): string {
-    if (!this.currentUser) {
-      return '';
-    }
-
+    if (!this.currentUser) return '';
     if (this.isAdmin()) {
       return this.currentUser.branchName
         ? `Admin view · Branch: ${this.currentUser.branchName}`
         : 'All branches';
     }
-
     return this.currentUser.branchName
       ? `Branch: ${this.currentUser.branchName}`
       : 'My branch';
