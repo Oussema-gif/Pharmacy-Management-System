@@ -14,7 +14,6 @@ A full‑stack enterprise web application designed to digitalise and automate ph
 ## ✨ Features
 
 - **🔐 Secure Authentication** – JWT‑based login with four roles: Admin, Manager, Pharmacist, Cashier
-- **🏢 Multi‑Branch Management** – Create and manage pharmacy branches; each user assigned to a branch
 - **👥 User Management** – Full CRUD for users with role and branch assignment
 - **📦 Inventory & Batch Tracking** – Medications with barcodes, batches with expiry, purchase/selling prices
 - **🛒 Point of Sale (POS)** – Search medications, camera barcode scanning (ZXing), FEFO batch selection, cart, patient & prescription linking, discount, payment methods
