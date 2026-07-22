@@ -70,7 +70,7 @@ Angular Frontend ↔ REST API (JSON) ↔ Spring Boot Backend ↔ PostgreSQL
 docker compose up -d --build
 ```
 
-Access the application at `http://localhost`
+Access the application at http://localhost
 
 Login: `admin@pharmacy.com` / `admin123`
 
@@ -90,7 +90,7 @@ npm install
 ng serve
 ```
 
-Frontend: `http://localhost:4200`
+Frontend: http://localhost:4200
 
 ---
 
@@ -109,28 +109,34 @@ Frontend: `http://localhost:4200`
 
 ## 📸 Screenshots
 
-![Login Page](screenshots/login.png)
-![Dashboard](screenshots/dashboard.png)
-![Users](screenshots/users.png)
-![POS](screenshots/pos.png) 
-![Reports](screenshots/reports.png)
-![Alerts](screenshots/alerts.png)
-![Stocks](screenshots/stocks.png)
-![Purchases](screenshots/purchases.png)
-![Prescriptions](screenshots/prescriptions.png)
-![Medications](screenshots/medications.png)
-![Audit Logs](screenshots/auditlogs.png)
-![Profile](screenshots/profile.png)
-![Branches](screenshots/branches.png)
-![Patients](screenshots/patients.png)
-![Suppliers](screenshots/suppliers.png)
-![Light Mode View](screenshots/lightmode.png)
+- https://screenshots/login.png
+- https://screenshots/dashboard.png
+- https://screenshots/users.png
+- https://screenshots/pos.png
+- https://screenshots/reports.png
+- https://screenshots/alerts.png
+- https://screenshots/stocks.png
+- https://screenshots/purchases.png
+- https://screenshots/prescriptions.png
+- https://screenshots/medications.png
+- https://screenshots/auditlogs.png
+- https://screenshots/profile.png
+- https://screenshots/branches.png
+- https://screenshots/patients.png
+- https://screenshots/suppliers.png
+- https://screenshots/lightmode.png
+
+---
+
+## 🎥 Demo Video
+
+▶ [Watch the full demo video (Google Drive)](#)
 
 ---
 
 ## 📖 Documentation
 
-- **Swagger UI:** `http://localhost:8080/swagger-ui/index.html` (after backend starts)
+- **Swagger UI:** http://localhost:8080/swagger-ui/index.html (after backend starts)
 - **UML Diagrams & ERD:** located in `docs/diagrams.md`
 - **Presentation outline:** `docs/presentation.md`
 
@@ -166,7 +172,7 @@ This project is proprietary software. All rights reserved. Contact the developer
 ## 👨‍💻 Developer
 
 **Rahmouni Oussema**
-[GitHub](https://github.com/)
+[GitHub](#)
 
 ---
 
@@ -211,10 +217,4 @@ pharmacy-management-system/
 ├── docker-compose.yml
 ├── README.md
 └── docs/                             (UML diagrams, presentation)
-
-
----
-
-## 🎥 Demo Video
-
-[▶ Watch the full demo video (Google Drive)](https://drive.google.com/file/d/1QTxo3JQe3fA4yXSt4fWaREEztzduRnnc/view?usp=sharing)
+```

@@ -10,10 +10,10 @@ import {
 import { ActivatedRoute, Router, RouterModule } from '@angular/router';
 import { MedicationService } from '../../core/services/medication.service';
 import { ToastService } from '../../core/services/toast.service';
-import { Medication } from '../../core/models/medication.model';
-import { UserService } from '../../core/services/user.service';
-import { CurrentUser } from '../../core/models/current-user.model';
+import { AuthService } from '../../core/auth.service';
 import { BranchService } from '../../core/services/branch.service';
+import { Medication } from '../../core/models/medication.model';
+import { Branch } from '../../core/models/branch.model';
 
 @Component({
   selector: 'app-medication-form',
@@ -27,14 +27,8 @@ export class MedicationFormComponent implements OnInit {
   isEdit = false;
   medicationId: number | null = null;
   error = '';
-
-  currentUser: CurrentUser | null = null;
-  branches: any[] = [];
   isAdmin = false;
-  loadingProfile = true;
-  loadingBranches = false;
-  loadingMedication = false;
-  saving = false;
+  branches: Branch[] = [];
 
   constructor(
     private fb: FormBuilder,
@@ -42,7 +36,7 @@ export class MedicationFormComponent implements OnInit {
     private toastService: ToastService,
     private route: ActivatedRoute,
     private router: Router,
-    private userService: UserService,
+    private authService: AuthService,
     private branchService: BranchService
   ) {
     this.medicationForm = this.fb.group({
@@ -56,121 +50,73 @@ export class MedicationFormComponent implements OnInit {
   }
 
   ngOnInit(): void {
-    this.userService.getProfile().subscribe({
-      next: (user: CurrentUser) => {
-        this.currentUser = user;
-        this.isAdmin = user.role === 'ADMIN';
-        this.loadingProfile = false;
+    this.medicationId = Number(this.route.snapshot.paramMap.get('id'));
+    const role = this.authService.getUserRole();
+    this.isAdmin = role === 'ADMIN';
 
-        if (this.isAdmin) {
-          this.medicationForm.get('branchId')?.setValidators([Validators.required]);
-          this.medicationForm.get('branchId')?.updateValueAndValidity();
-          this.loadBranches();
-        } else {
-          if (!user.branchId) {
-            this.error = 'Your account is not assigned to any branch.';
-            this.toastService.show('error', this.error);
-            return;
-          }
-
-          this.medicationForm.patchValue({ branchId: user.branchId });
-        }
-
-        this.loadMedicationIfEdit();
-      },
-      error: (err: any) => {
-        this.loadingProfile = false;
-        this.error = err?.error?.message || err?.error || 'Failed to load user profile';
-        this.toastService.show('error', this.error);
-      }
-    });
-  }
-
-  private loadBranches(): void {
-    this.loadingBranches = true;
-
-    this.branchService.getAll().subscribe({
-      next: (data: any[]) => {
-        this.branches = data;
-        this.loadingBranches = false;
-      },
-      error: (err: any) => {
-        this.loadingBranches = false;
-        this.error = err?.error?.message || err?.error || 'Failed to load branches';
-        this.toastService.show('error', this.error);
-      }
-    });
-  }
-
-  private loadMedicationIfEdit(): void {
-    const rawId = this.route.snapshot.paramMap.get('id');
-    this.medicationId = rawId ? Number(rawId) : null;
+    if (this.isAdmin) {
+      this.loadBranches();
+    } else {
+      // Non‑admin: auto‑set branch
+      const branchId = this.authService.getUserBranchId();
+      this.medicationForm.patchValue({ branchId: branchId });
+    }
 
     if (this.medicationId) {
       this.isEdit = true;
-      this.loadingMedication = true;
-
-      this.medicationService.getById(this.medicationId).subscribe({
-        next: (med: Medication) => {
-          this.medicationForm.patchValue({
-            name: med.name,
-            genericName: med.genericName ?? '',
-            category: med.category ?? '',
-            unit: med.unit ?? '',
-            barcode: med.barcode ?? '',
-            branchId: med.branchId ?? null
-          });
-          this.loadingMedication = false;
-        },
-        error: (err: any) => {
-          this.loadingMedication = false;
-          this.error = err?.error?.message || err?.error || 'Medication not found';
-          this.toastService.show('error', this.error);
-        }
-      });
+      this.loadMedication();
     }
   }
 
+  private loadBranches(): void {
+    this.branchService.getAll().subscribe({
+      next: (data: Branch[]) => {
+        this.branches = data;
+      },
+      error: () => {
+        this.toastService.show('error', 'Failed to load branches');
+      }
+    });
+  }
+
+  private loadMedication(): void {
+    this.medicationService.getById(this.medicationId!).subscribe({
+      next: (med: Medication) => {
+        this.medicationForm.patchValue({
+          name: med.name,
+          genericName: med.genericName || '',
+          category: med.category || '',
+          unit: med.unit || '',
+          barcode: med.barcode || '',
+          branchId: med.branchId ?? null
+        });
+      },
+      error: () => {
+        this.error = 'Medication not found';
+        this.toastService.show('error', this.error);
+      }
+    });
+  }
+
   onSubmit(): void {
-    if (!this.currentUser) {
-      this.toastService.show('error', 'No user context available.');
-      return;
-    }
-
-    if (!this.isAdmin) {
-      this.medicationForm.patchValue({
-        branchId: this.currentUser.branchId ?? null
-      });
-    }
-
     if (this.medicationForm.invalid) {
       this.medicationForm.markAllAsTouched();
-      this.toastService.show('warning', 'Please complete all required fields.');
+      this.toastService.show('warning', 'Please fill all required fields.');
       return;
     }
 
-    const medData: Medication = this.medicationForm.getRawValue();
-
+    const medData: Medication = this.medicationForm.value;
     const request = this.isEdit && this.medicationId
       ? this.medicationService.update(this.medicationId, medData)
       : this.medicationService.create(medData);
 
-    this.saving = true;
-
     request.subscribe({
       next: () => {
-        this.saving = false;
-        this.toastService.show(
-          'success',
-          this.isEdit ? 'Medication updated' : 'Medication created'
-        );
-        this.router.navigate(['/medications'], {
-          queryParams: { refresh: Date.now() }
-        });
+        this.toastService.show('success', this.isEdit ? 'Medication updated' : 'Medication created');
+        this.router.navigate(['/medications']);
       },
       error: (err: any) => {
-        this.saving = false;
-        const msg = err?.error?.message || err?.error || 'Save failed';
+        const msg = err.error?.message || 'Save failed';
         this.error = msg;
         this.toastService.show('error', msg);
       }

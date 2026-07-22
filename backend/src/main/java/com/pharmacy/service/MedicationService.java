@@ -1,13 +1,13 @@
 package com.pharmacy.service;
 
 import com.pharmacy.dto.MedicationDto;
-import com.pharmacy.model.Batch;
 import com.pharmacy.model.Branch;
 import com.pharmacy.model.Medication;
 import com.pharmacy.repository.BatchRepository;
 import com.pharmacy.repository.BranchRepository;
 import com.pharmacy.repository.MedicationRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -25,6 +25,7 @@ public class MedicationService {
     @Autowired
     private BatchRepository batchRepository;
 
+    // ────────────────────────── READ ──────────────────────────
     public List<MedicationDto> getAll() {
         return medicationRepository.findAll()
                 .stream()
@@ -36,7 +37,7 @@ public class MedicationService {
     public List<MedicationDto> getByBranch(Long branchId) {
         return batchRepository.findByBranchId(branchId).stream()
                 .filter(b -> b.getQuantity() > 0)
-                .map(Batch::getMedication)
+                .map(batch -> batch.getMedication())
                 .distinct()
                 .map(this::toDto)
                 .collect(Collectors.toList());
@@ -54,6 +55,7 @@ public class MedicationService {
         return toDto(medication);
     }
 
+    // ────────────────────────── WRITE ──────────────────────────
     public MedicationDto create(MedicationDto dto) {
         Medication medication = new Medication();
         medication.setName(dto.getName());
@@ -62,8 +64,8 @@ public class MedicationService {
         medication.setUnit(dto.getUnit());
         medication.setBarcode(dto.getBarcode());
 
-        Branch branch = branchRepository.findById(1L)
-                .orElseThrow(() -> new RuntimeException("Default branch not found"));
+        // Determine branch: use DTO if provided, otherwise current user's branch
+        Branch branch = resolveBranch(dto.getBranchId());
         medication.setBranch(branch);
 
         medication = medicationRepository.save(medication);
@@ -96,6 +98,23 @@ public class MedicationService {
         medicationRepository.delete(medication);
     }
 
+    // ────────────────────────── HELPERS ──────────────────────────
+    private Branch resolveBranch(Long branchId) {
+        if (branchId != null) {
+            return branchRepository.findById(branchId)
+                    .orElseThrow(() -> new RuntimeException("Branch not found"));
+        }
+        // Fallback to the current user's branch
+        Object principal = SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        if (principal instanceof UserDetailsImpl userDetails) {
+            Branch userBranch = userDetails.getBranch();
+            if (userBranch != null) {
+                return userBranch;
+            }
+        }
+        throw new RuntimeException("Cannot determine branch. Please contact an administrator.");
+    }
+
     private MedicationDto toDto(Medication medication) {
         MedicationDto dto = new MedicationDto();
         dto.setId(medication.getId());
@@ -105,6 +124,7 @@ public class MedicationService {
         dto.setUnit(medication.getUnit());
         dto.setBarcode(medication.getBarcode());
 
+        // ✅ Always include branch information when available
         if (medication.getBranch() != null) {
             dto.setBranchId(medication.getBranch().getId());
             dto.setBranchName(medication.getBranch().getName());
