@@ -191,11 +191,13 @@
     </div>
   </div>
 
+  <!-- ✅ Added (scanError) handler -->
   <div *ngIf="showScanner" class="scanner-overlay">
     <div class="scanner-box">
       <zxing-scanner
         [formats]="scannerFormats"
         (scanSuccess)="onCodeResult($event)"
+        (scanError)="onScannerError($event)"
         [autofocusEnabled]="true"
         class="scanner-view"
       ></zxing-scanner>

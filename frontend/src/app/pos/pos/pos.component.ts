@@ -119,6 +119,11 @@ export class PosComponent implements OnInit {
     this.lookupBarcode(result);
   }
 
+  // ✅ Added scanner error handler to suppress unhandled rejections
+  onScannerError(error: any): void {
+    console.warn('Scanner error (suppressed):', error);
+  }
+
   addToCart(): void {
     if (!this.selectedBatch || this.quantity <= 0 || this.quantity > this.selectedBatch.quantity) {
       this.toastService.show('warning', 'Invalid quantity or no batch selected');
