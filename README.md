@@ -211,4 +211,10 @@ pharmacy-management-system/
 ├── docker-compose.yml
 ├── README.md
 └── docs/                             (UML diagrams, presentation)
-```
+
+
+---
+
+## 🎥 Demo Video
+
+[▶ Watch the full demo video (Google Drive)](https://drive.google.com/file/d/1QTxo3JQe3fA4yXSt4fWaREEztzduRnnc/view?usp=sharing)
