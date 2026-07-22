@@ -1,0 +1,71 @@
+<div class="page-container">
+  <h2 class="fw-bold mb-4">{{ isEdit ? 'Edit Medication' : 'Add New Medication' }}</h2>
+
+  <div *ngIf="loadingProfile || loadingMedication || loadingBranches" class="alert alert-secondary">
+    Loading...
+  </div>
+
+  <div *ngIf="error && !loadingProfile && !loadingMedication && !loadingBranches" class="alert alert-danger">
+    {{ error }}
+  </div>
+
+  <div class="card" *ngIf="!loadingProfile && !loadingMedication && !loadingBranches && !error">
+    <div class="card-body">
+      <form [formGroup]="medicationForm" (ngSubmit)="onSubmit()">
+        <div class="row">
+          <div class="col-md-6 mb-3">
+            <label class="form-label">Name *</label>
+            <input type="text" class="form-control" formControlName="name" />
+          </div>
+          <div class="col-md-6 mb-3">
+            <label class="form-label">Generic Name</label>
+            <input type="text" class="form-control" formControlName="genericName" />
+          </div>
+        </div>
+
+        <div class="row">
+          <div class="col-md-4 mb-3">
+            <label class="form-label">Category</label>
+            <input type="text" class="form-control" formControlName="category" />
+          </div>
+          <div class="col-md-4 mb-3">
+            <label class="form-label">Unit</label>
+            <input type="text" class="form-control" formControlName="unit" placeholder="e.g., tablet, ml" />
+          </div>
+          <div class="col-md-4 mb-3">
+            <label class="form-label">Barcode</label>
+            <input type="text" class="form-control" formControlName="barcode" />
+          </div>
+        </div>
+
+        <div class="row" *ngIf="isAdmin">
+          <div class="col-md-6 mb-3">
+            <label class="form-label">Branch *</label>
+            <select class="form-select" formControlName="branchId">
+              <option [ngValue]="null">Select branch</option>
+              <option *ngFor="let branch of branches" [ngValue]="branch.id">
+                {{ branch.name }}
+              </option>
+            </select>
+          </div>
+        </div>
+
+        <div class="row" *ngIf="!isAdmin && currentUser?.branchName">
+          <div class="col-md-6 mb-3">
+            <label class="form-label">Branch</label>
+            <input type="text" class="form-control" [value]="currentUser?.branchName" disabled />
+          </div>
+        </div>
+
+        <div class="d-flex gap-2">
+          <button type="submit" class="btn btn-success" [disabled]="medicationForm.invalid || saving">
+            {{ saving ? 'Saving...' : 'Save' }}
+          </button>
+          <button type="button" class="btn btn-outline-secondary" [routerLink]="['/medications']">
+            Cancel
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>

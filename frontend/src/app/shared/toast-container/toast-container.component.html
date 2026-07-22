@@ -1,0 +1,28 @@
+<div class="toast-container" aria-live="polite" aria-atomic="true">
+  <div
+    *ngFor="let toast of toastService.toasts$ | async; trackBy: trackByToastId"
+    class="toast-card"
+    [ngClass]="'toast-' + toast.type"
+    role="status"
+  >
+    <div class="toast-accent"></div>
+
+    <div class="toast-icon" aria-hidden="true">
+      <i class="fas" [ngClass]="getIcon(toast.type)"></i>
+    </div>
+
+    <div class="toast-content">
+      <div class="toast-title">{{ toast.title }}</div>
+      <div class="toast-message">{{ toast.message }}</div>
+    </div>
+
+    <button
+      type="button"
+      class="toast-close"
+      (click)="toastService.remove(toast.id)"
+      aria-label="Close notification"
+    >
+      <i class="fas fa-xmark"></i>
+    </button>
+  </div>
+</div>

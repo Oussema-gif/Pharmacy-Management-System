@@ -1,0 +1,33 @@
+<div class="page-container">
+  <div class="d-flex justify-content-between align-items-center mb-4">
+    <h2 class="fw-bold">Branch Management</h2>
+    <button class="btn btn-primary" [routerLink]="['/branches/new']">
+      <i class="fas fa-plus me-2"></i> Add New Branch
+    </button>
+  </div>
+  <div *ngIf="error" class="alert alert-danger">{{ error }}</div>
+  <div class="card">
+    <div class="card-body p-0">
+      <div class="table-responsive">
+        <table class="table mb-0" *ngIf="branches.length > 0">
+          <thead>
+            <tr><th>ID</th><th>Name</th><th>Address</th><th>Phone</th><th class="text-end">Actions</th></tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let branch of branches">
+              <td>{{ branch.id }}</td>
+              <td>{{ branch.name }}</td>
+              <td>{{ branch.address || '-' }}</td>
+              <td>{{ branch.phone || '-' }}</td>
+              <td class="text-end">
+                <button class="btn btn-sm btn-warning me-1" [routerLink]="['/branches/edit', branch.id]">Edit</button>
+                <button class="btn btn-sm btn-danger" (click)="deleteBranch(branch.id!)">Delete</button>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+      <p *ngIf="branches.length === 0 && !error" class="text-muted p-3">No branches found.</p>
+    </div>
+  </div>
+</div>

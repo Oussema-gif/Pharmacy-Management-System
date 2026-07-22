@@ -1,0 +1,28 @@
+<div class="page-container">
+  <h2 class="fw-bold mb-4">{{ isEdit ? 'Edit Branch' : 'Add New Branch' }}</h2>
+  <div *ngIf="error" class="alert alert-danger">{{ error }}</div>
+  <div class="card">
+    <div class="card-body">
+      <form [formGroup]="branchForm" (ngSubmit)="onSubmit()">
+        <div class="row">
+          <div class="col-md-6 mb-3">
+            <label class="form-label">Name *</label>
+            <input type="text" class="form-control" formControlName="name" />
+          </div>
+          <div class="col-md-6 mb-3">
+            <label class="form-label">Phone</label>
+            <input type="text" class="form-control" formControlName="phone" />
+          </div>
+        </div>
+        <div class="mb-3">
+          <label class="form-label">Address</label>
+          <textarea class="form-control" formControlName="address" rows="2"></textarea>
+        </div>
+        <div class="d-flex gap-2">
+          <button type="submit" class="btn btn-success" [disabled]="branchForm.invalid">Save</button>
+          <button type="button" class="btn btn-outline-secondary" [routerLink]="['/branches']">Cancel</button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>

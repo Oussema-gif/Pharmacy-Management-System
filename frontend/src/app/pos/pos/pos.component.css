@@ -1,0 +1,203 @@
+:host {
+  display: block;
+}
+
+.pos-page {
+  color: var(--color-text);
+}
+
+.page-title {
+  color: var(--color-text);
+  letter-spacing: -0.02em;
+}
+
+.pos-card {
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: 16px;
+  box-shadow: var(--shadow-sm);
+  overflow: hidden;
+}
+
+.pos-card .card-body {
+  background: var(--color-surface);
+  color: var(--color-text);
+}
+
+.section-title,
+.cart-title {
+  color: var(--color-text);
+}
+
+.pos-label {
+  color: var(--color-text);
+  font-weight: 600;
+}
+
+.medication-list {
+  max-height: 220px;
+  overflow-y: auto;
+  border: 1px solid var(--color-border);
+  border-radius: 10px;
+  background: var(--color-surface);
+}
+
+.medication-item {
+  cursor: pointer;
+  border-left: 3px solid transparent;
+  color: var(--color-text);
+  transition:
+    background var(--transition-fast),
+    border-color var(--transition-fast),
+    color var(--transition-fast);
+}
+
+.medication-item:hover {
+  background: var(--color-surface-hover);
+}
+
+.medication-item.selected {
+  border-left-color: var(--color-primary-700);
+  background: var(--color-primary-100);
+  color: var(--color-primary-800);
+  font-weight: 600;
+}
+
+.medication-icon {
+  color: var(--color-text-muted);
+}
+
+.empty-inline {
+  color: var(--color-text-muted);
+}
+
+.cart-header {
+  background: var(--color-surface) !important;
+  color: var(--color-text);
+  border-bottom: 1px solid var(--color-border);
+  padding: 1rem 1.25rem;
+}
+
+.cart-badge {
+  background: var(--color-primary-700) !important;
+  color: #fff;
+  font-weight: 700;
+  border-radius: 999px;
+  padding: 0.35rem 0.65rem;
+}
+
+.pos-table {
+  margin: 0;
+  --bs-table-bg: transparent;
+  --bs-table-color: var(--color-text);
+  --bs-table-border-color: var(--color-border);
+  --bs-table-striped-color: var(--color-text);
+  --bs-table-striped-bg: var(--color-surface-hover);
+  --bs-table-hover-color: var(--color-text);
+  --bs-table-hover-bg: var(--color-surface-hover);
+}
+
+.pos-table thead th {
+  background: var(--color-surface-alt, var(--color-surface));
+  color: var(--color-text-muted);
+  border-bottom: 1px solid var(--color-border);
+  font-size: 0.78rem;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
+.pos-table tbody td {
+  color: var(--color-text);
+  background: transparent;
+  border-color: var(--color-border);
+  vertical-align: middle;
+}
+
+.empty-cart-cell {
+  color: var(--color-text-muted) !important;
+  background: transparent !important;
+  text-align: center;
+  padding: 1rem !important;
+}
+
+.pos-input,
+.pos-select {
+  background: var(--color-surface);
+  color: var(--color-text);
+  border: 1px solid var(--color-border);
+}
+
+.pos-input::placeholder {
+  color: var(--color-text-muted);
+}
+
+.pos-input:focus,
+.pos-select:focus {
+  background: var(--color-surface);
+  color: var(--color-text);
+  border-color: var(--color-primary-700);
+  box-shadow: 0 0 0 0.2rem rgba(8, 127, 123, 0.18);
+}
+
+.scan-btn {
+  white-space: nowrap;
+}
+
+.complete-sale-btn {
+  min-height: 72px;
+  font-weight: 700;
+}
+
+.complete-sale-btn small {
+  font-size: 0.82rem;
+}
+
+.scanner-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.8);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 2000;
+}
+
+.scanner-box {
+  text-align: center;
+  background: var(--color-surface);
+  color: var(--color-text);
+  padding: 1rem;
+  border-radius: 16px;
+  border: 1px solid var(--color-border);
+  box-shadow: var(--shadow-lg, 0 20px 60px rgba(0, 0, 0, 0.35));
+}
+
+.scanner-view {
+  display: block;
+  width: 100%;
+  max-width: 400px;
+}
+
+[data-theme='dark'] .medication-item.selected {
+  background: color-mix(in srgb, var(--color-primary-700) 22%, var(--color-surface));
+  color: var(--color-text);
+}
+
+[data-theme='dark'] .cart-header {
+  background: var(--color-surface) !important;
+  color: var(--color-text);
+}
+
+[data-theme='dark'] .pos-table thead th {
+  background: color-mix(in srgb, var(--color-surface) 84%, black);
+  color: var(--color-text-muted);
+}
+
+[data-theme='dark'] .cart-badge {
+  background: var(--color-primary-700) !important;
+  color: #fff;
+}

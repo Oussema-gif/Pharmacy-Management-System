@@ -1,0 +1,63 @@
+<div class="page-container">
+  <div class="d-flex justify-content-between align-items-center mb-4">
+    <div>
+      <h2 class="fw-bold mb-1">Alerts</h2>
+      <p class="text-muted mb-0" *ngIf="scopeLabel">{{ scopeLabel }}</p>
+    </div>
+
+    <button class="btn btn-outline-secondary" (click)="loadAlerts()" [disabled]="loading">
+      <i class="fas fa-sync-alt me-2"></i> Refresh
+    </button>
+  </div>
+
+  <div *ngIf="loading">
+    <div class="alert skeleton alert-skeleton" *ngFor="let _ of [1,2,3]">
+      <div class="skeleton skeleton-text"></div>
+    </div>
+  </div>
+
+  <div *ngIf="error && !loading" class="alert alert-danger">
+    {{ error }}
+  </div>
+
+  <div *ngIf="!loading">
+    <div *ngIf="alerts.length === 0 && !error" class="alert alert-info">
+      No active alerts.
+    </div>
+
+    <div
+      *ngFor="let alert of alerts"
+      class="alert"
+      [ngClass]="{
+        'alert-warning': alert.type === 'LOW_STOCK',
+        'alert-danger': alert.type === 'EXPIRY'
+      }"
+    >
+      <div class="d-flex justify-content-between align-items-center gap-3">
+        <div>
+          <div class="fw-semibold mb-1">
+            <i
+              class="fas me-2"
+              [ngClass]="{
+                'fa-exclamation-triangle': alert.type === 'LOW_STOCK',
+                'fa-clock': alert.type === 'EXPIRY'
+              }"
+            ></i>
+            {{ alert.type === 'LOW_STOCK' ? 'Low stock' : 'Expiry warning' }}
+          </div>
+
+          <div>{{ alert.message }}</div>
+
+          <small class="text-muted d-block mt-1">
+            <span *ngIf="alert.branchName">{{ alert.branchName }} · </span>
+            <span *ngIf="alert.createdAt">{{ alert.createdAt | date:'medium' }}</span>
+          </small>
+        </div>
+
+        <button class="btn btn-sm btn-outline-dark" (click)="dismiss(alert)">
+          Dismiss
+        </button>
+      </div>
+    </div>
+  </div>
+</div>

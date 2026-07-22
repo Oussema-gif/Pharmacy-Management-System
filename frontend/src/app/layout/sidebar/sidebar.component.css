@@ -1,0 +1,254 @@
+:host {
+  display: block;
+}
+
+.sidebar {
+  position: fixed;
+  inset: 0 auto 0 0;
+  z-index: 1000;
+  display: flex;
+  width: var(--sidebar-width);
+  min-height: 100vh;
+  flex-direction: column;
+  overflow: hidden;
+  background:
+    linear-gradient(180deg, rgba(255, 255, 255, 0.025), transparent 20%),
+    var(--color-brand-950);
+  box-shadow: 4px 0 24px rgba(9, 43, 61, 0.12);
+  color: #bfd0d7;
+}
+
+.sidebar-brand {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  min-height: 88px;
+  padding: 20px;
+  border-bottom: 1px solid rgba(217, 230, 235, 0.1);
+}
+
+.brand-icon {
+  display: flex;
+  width: 42px;
+  height: 42px;
+  flex: 0 0 42px;
+  align-items: center;
+  justify-content: center;
+  border-radius: 11px;
+  background: var(--color-primary-700);
+  color: #ffffff;
+  font-size: 17px;
+  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.18);
+}
+
+.brand-text h5 {
+  margin: 0;
+  color: #ffffff;
+  font-size: 15px;
+  font-weight: 700;
+  letter-spacing: -0.02em;
+}
+
+.brand-text span {
+  display: block;
+  margin-top: 2px;
+  color: #89a5b2;
+  font-size: 10px;
+  font-weight: 600;
+  letter-spacing: 0.07em;
+  text-transform: uppercase;
+}
+
+.sidebar-menu {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  gap: 2px;
+  margin: 0;
+  padding: 16px 12px;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  list-style: none;
+
+  /* Firefox and modern browsers */
+  scrollbar-width: thin;
+  scrollbar-color: rgba(137, 165, 178, 0.72) transparent;
+}
+
+.sidebar-menu::-webkit-scrollbar {
+  width: 8px;
+}
+
+.sidebar-menu::-webkit-scrollbar-track {
+  margin: 8px 0;
+  border-radius: 999px;
+  background: transparent;
+}
+
+.sidebar-menu::-webkit-scrollbar-thumb {
+  min-height: 40px;
+  border: 2px solid transparent;
+  border-radius: 999px;
+  background: rgba(137, 165, 178, 0.62);
+  background-clip: padding-box;
+  transition: background-color var(--transition-fast);
+}
+
+.sidebar-menu::-webkit-scrollbar-thumb:hover {
+  background: rgba(191, 208, 215, 0.95);
+  background-clip: padding-box;
+}
+
+.sidebar-menu::-webkit-scrollbar-thumb:active {
+  background: var(--color-primary-600);
+  background-clip: padding-box;
+}
+
+.sidebar-menu::-webkit-scrollbar-corner {
+  background: transparent;
+}
+
+.menu-item {
+  margin: 0;
+}
+
+.menu-link {
+  display: flex;
+  width: 100%;
+  min-height: 44px;
+  align-items: center;
+  gap: 12px;
+  padding: 0 12px;
+  border: 0;
+  border-radius: var(--radius-md);
+  background: transparent;
+  color: #bfd0d7;
+  font-size: 13px;
+  font-weight: 500;
+  text-align: left;
+  text-decoration: none;
+  transition:
+    background var(--transition-fast),
+    color var(--transition-fast),
+    box-shadow var(--transition-fast);
+}
+
+.menu-link i {
+  display: inline-flex;
+  width: 20px;
+  flex: 0 0 20px;
+  justify-content: center;
+  color: #89a5b2;
+  font-size: 15px;
+  text-align: center;
+  transition: color var(--transition-fast);
+}
+
+.menu-link:hover {
+  background: rgba(255, 255, 255, 0.075);
+  color: #ffffff;
+}
+
+.menu-link:hover i {
+  color: #d9e6eb;
+}
+
+.menu-link.active {
+  box-shadow: inset 3px 0 0 var(--color-primary-600);
+  background: rgba(11, 147, 140, 0.2);
+  color: #ffffff;
+  font-weight: 600;
+}
+
+.menu-link.active i {
+  color: #66d4cd;
+}
+
+.sidebar-footer {
+  padding: 12px;
+  border-top: 1px solid rgba(217, 230, 235, 0.1);
+}
+
+.theme-toggle {
+  margin-bottom: 4px;
+}
+
+.theme-toggle i {
+  transition:
+    transform 280ms ease,
+    color var(--transition-fast);
+}
+
+.theme-toggle:active i {
+  transform: rotate(180deg) scale(0.85);
+}
+
+.logout-link {
+  color: #bfd0d7;
+}
+
+.logout-link:hover {
+  background: rgba(194, 65, 59, 0.16);
+  color: #fecaca;
+}
+
+.logout-link:hover i {
+  color: #fca5a5;
+}
+
+:host-context(html[data-bs-theme="dark"]) .sidebar {
+  box-shadow: 4px 0 24px rgba(0, 0, 0, 0.3);
+}
+
+@media (max-width: 960px) {
+  .sidebar {
+    width: 76px;
+  }
+
+  .sidebar-brand {
+    min-height: 76px;
+    justify-content: center;
+    padding: 16px;
+  }
+
+  .brand-text,
+  .menu-link span {
+    display: none;
+  }
+
+  .sidebar-menu {
+    align-items: center;
+    padding: 16px 10px;
+  }
+
+  .menu-item,
+  .menu-link {
+    width: 100%;
+  }
+
+  .menu-link {
+    justify-content: center;
+    padding: 0;
+  }
+
+  .menu-link i {
+    width: auto;
+    flex: 0 0 auto;
+  }
+
+  .sidebar-footer {
+    padding: 10px;
+  }
+
+  .theme-toggle {
+    margin-bottom: 4px;
+  }
+
+  .sidebar-menu::-webkit-scrollbar {
+    width: 5px;
+  }
+
+  .sidebar-menu::-webkit-scrollbar-thumb {
+    border-width: 1px;
+  }
+}

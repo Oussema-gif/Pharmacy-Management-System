@@ -1,0 +1,27 @@
+:host {
+  display: block;
+}
+
+.main-content {
+  min-height: 100vh;
+  margin-left: var(--sidebar-width);
+  overflow-x: hidden;
+  background: var(--color-bg);
+}
+
+.route-container {
+  position: relative;
+  min-height: 100vh;
+}
+
+@media (max-width: 960px) {
+  .main-content {
+    margin-left: 76px;
+  }
+}
+
+@media (max-width: 576px) {
+  .main-content {
+    margin-left: 0;
+  }
+}

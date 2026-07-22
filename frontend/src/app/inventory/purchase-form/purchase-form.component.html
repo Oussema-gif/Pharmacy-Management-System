@@ -1,0 +1,119 @@
+<div class="page-container">
+  <div class="d-flex justify-content-between align-items-center mb-4">
+    <div>
+      <h2 class="fw-bold mb-1">New Purchase Order</h2>
+      <p class="text-muted mb-0">
+        Branch: {{ branchLabel }}
+      </p>
+    </div>
+  </div>
+
+  <div *ngIf="error" class="alert alert-danger">
+    {{ error }}
+  </div>
+
+  <div class="card" *ngIf="!error">
+    <div class="card-body">
+      <form [formGroup]="purchaseForm" (ngSubmit)="onSubmit()">
+        <div class="row mb-4">
+          <div class="col-md-6">
+            <label class="form-label">Supplier *</label>
+            <select class="form-select" formControlName="supplierId">
+              <option [ngValue]="null" disabled>-- Select Supplier --</option>
+              <option *ngFor="let s of suppliers" [ngValue]="s.id">{{ s.name }}</option>
+            </select>
+          </div>
+
+          <div class="col-md-6">
+            <label class="form-label">Branch</label>
+            <input
+              type="text"
+              class="form-control"
+              [value]="branchLabel"
+              disabled
+            />
+          </div>
+        </div>
+
+        <h5 class="mb-3">Items</h5>
+
+        <div formArrayName="items">
+          <div
+            *ngFor="let item of items.controls; let i = index"
+            [formGroupName]="i"
+            class="row mb-3 border rounded p-3 position-relative"
+          >
+            <button
+              type="button"
+              class="btn-close position-absolute top-0 end-0 m-2"
+              (click)="removeItem(i)"
+            ></button>
+
+            <div class="col-md-3 mb-2">
+              <label class="form-label">Medication *</label>
+              <select class="form-select" formControlName="medicationId">
+                <option [ngValue]="null" disabled>-- Select --</option>
+                <option *ngFor="let med of medications" [ngValue]="med.id">
+                  {{ med.name }}
+                </option>
+              </select>
+            </div>
+
+            <div class="col-md-2 mb-2">
+              <label class="form-label">Batch # *</label>
+              <input type="text" class="form-control" formControlName="batchNumber" />
+            </div>
+
+            <div class="col-md-2 mb-2">
+              <label class="form-label">Qty *</label>
+              <input type="number" class="form-control" formControlName="quantity" />
+            </div>
+
+            <div class="col-md-2 mb-2">
+              <label class="form-label">Purchase Price</label>
+              <input
+                type="number"
+                step="0.01"
+                class="form-control"
+                formControlName="purchasePrice"
+              />
+            </div>
+
+            <div class="col-md-2 mb-2">
+              <label class="form-label">Selling Price</label>
+              <input
+                type="number"
+                step="0.01"
+                class="form-control"
+                formControlName="sellingPrice"
+              />
+            </div>
+
+            <div class="col-md-2 mb-2">
+              <label class="form-label">Expiry Date</label>
+              <input type="date" class="form-control" formControlName="expiryDate" />
+            </div>
+          </div>
+        </div>
+
+        <button type="button" class="btn btn-outline-primary mb-4" (click)="addItem()">
+          <i class="fas fa-plus me-1"></i> Add Item
+        </button>
+
+        <div class="d-flex gap-2">
+          <button
+            type="submit"
+            class="btn btn-success"
+            [disabled]="purchaseForm.invalid || saving"
+          >
+            {{ saving ? 'Saving...' : 'Save Purchase' }}
+          </button>
+
+          <button type="button" class="btn btn-outline-secondary" [routerLink]="['/inventory']">
+            Cancel
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>

@@ -1,0 +1,205 @@
+<div class="page-container pos-page">
+  <div class="d-flex justify-content-between align-items-center mb-4">
+    <h2 class="fw-bold page-title">Point of Sale</h2>
+  </div>
+
+  <div class="row g-4">
+    <div class="col-md-5">
+      <div class="card pos-card">
+        <div class="card-body">
+          <h5 class="fw-bold mb-3 section-title">
+            <i class="fas fa-search me-2"></i>Find Medication
+          </h5>
+
+          <div class="input-group mb-3">
+            <input
+              type="text"
+              class="form-control pos-input"
+              [(ngModel)]="searchQuery"
+              placeholder="Search by name..."
+            />
+            <input
+              type="text"
+              class="form-control pos-input"
+              [(ngModel)]="barcode"
+              placeholder="Barcode scan or type"
+              (keyup.enter)="onBarcodeEnter()"
+            />
+            <button class="btn btn-outline-primary scan-btn" (click)="openScanner()">
+              <i class="fas fa-camera me-1"></i>Scan
+            </button>
+          </div>
+
+          <div class="medication-list">
+            <div
+              *ngFor="let med of filteredMedications"
+              class="medication-item p-2"
+              [class.selected]="med.id === selectedMedicationId"
+              (click)="selectMedication(med.id!)"
+            >
+              <i class="fas fa-capsules me-2 medication-icon"></i>{{ med.name }}
+            </div>
+
+            <div *ngIf="filteredMedications.length === 0" class="p-2 empty-inline">
+              No medications found.
+            </div>
+          </div>
+
+          <div *ngIf="availableBatches.length > 0" class="mt-3">
+            <label class="form-label fw-semibold pos-label">
+              <i class="fas fa-boxes me-1"></i>Select Batch (FEFO)
+            </label>
+
+            <select
+              class="form-select pos-select"
+              [(ngModel)]="selectedBatch"
+              [ngModelOptions]="{ standalone: true }"
+            >
+              <option *ngFor="let batch of availableBatches" [ngValue]="batch">
+                {{ batch.batchNumber }} - Exp: {{ batch.expiryDate }} - Stock: {{ batch.quantity }} -
+                {{ batch.sellingPrice | currency }}
+              </option>
+            </select>
+
+            <div class="input-group mt-2">
+              <input
+                type="number"
+                class="form-control pos-input"
+                [(ngModel)]="quantity"
+                min="1"
+                placeholder="Qty"
+              />
+              <button class="btn btn-primary" (click)="addToCart()" [disabled]="!selectedBatch">
+                <i class="fas fa-cart-plus me-1"></i> Add to Cart
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="col-md-7">
+      <div class="card pos-card cart-card">
+        <div class="card-header cart-header d-flex justify-content-between align-items-center">
+          <h5 class="fw-bold mb-0 cart-title">
+            <i class="fas fa-shopping-cart me-2"></i>Cart
+          </h5>
+          <span class="badge cart-badge">{{ cart.length }} items</span>
+        </div>
+
+        <div class="card-body p-0">
+          <div class="table-responsive">
+            <table class="table pos-table mb-0">
+              <thead>
+                <tr>
+                  <th>Medication</th>
+                  <th>Batch</th>
+                  <th>Qty</th>
+                  <th>Price</th>
+                  <th>Subtotal</th>
+                  <th></th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr *ngFor="let item of cart; let i = index">
+                  <td>{{ item.batch.medicationName }}</td>
+                  <td>{{ item.batch.batchNumber }}</td>
+                  <td>{{ item.quantity }}</td>
+                  <td>{{ item.batch.sellingPrice | currency }}</td>
+                  <td>{{ item.batch.sellingPrice * item.quantity | currency }}</td>
+                  <td>
+                    <button class="btn btn-sm btn-outline-danger" (click)="removeFromCart(i)">
+                      <i class="fas fa-trash"></i>
+                    </button>
+                  </td>
+                </tr>
+                <tr *ngIf="cart.length === 0">
+                  <td colspan="6" class="empty-cart-cell">No items in cart.</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+
+      <div class="card pos-card mt-3">
+        <div class="card-body">
+          <div class="row g-3">
+            <div class="col-md-6">
+              <label class="form-label pos-label">
+                <i class="fas fa-user me-1"></i>Patient (optional)
+              </label>
+              <select class="form-select pos-select" [(ngModel)]="patientId">
+                <option [ngValue]="null">Walk-in</option>
+                <option *ngFor="let p of patients" [ngValue]="p.id">
+                  {{ p.fullName }}
+                </option>
+              </select>
+            </div>
+
+            <div class="col-md-6">
+              <label class="form-label pos-label">
+                <i class="fas fa-file-prescription me-1"></i>Prescription (optional)
+              </label>
+              <select class="form-select pos-select" [(ngModel)]="prescriptionId">
+                <option [ngValue]="null">None</option>
+                <option *ngFor="let pr of prescriptions" [ngValue]="pr.id">
+                  {{ pr.id }} - Dr. {{ pr.doctorName }}
+                </option>
+              </select>
+            </div>
+
+            <div class="col-md-4">
+              <label class="form-label pos-label">
+                <i class="fas fa-tag me-1"></i>Discount
+              </label>
+              <input
+                type="number"
+                class="form-control pos-input"
+                [(ngModel)]="discount"
+                step="0.01"
+                min="0"
+              />
+            </div>
+
+            <div class="col-md-4">
+              <label class="form-label pos-label">
+                <i class="fas fa-credit-card me-1"></i>Payment Method
+              </label>
+              <select class="form-select pos-select" [(ngModel)]="paymentMethod">
+                <option value="Cash">Cash</option>
+                <option value="Credit Card">Credit Card</option>
+                <option value="Insurance">Insurance</option>
+              </select>
+            </div>
+
+            <div class="col-md-4 d-flex align-items-end">
+              <button
+                class="btn btn-success w-100 complete-sale-btn"
+                (click)="completeSale()"
+                [disabled]="cart.length === 0 || loading"
+              >
+                <i class="fas fa-check-circle me-1"></i>
+                Complete Sale
+                <br />
+                <small>{{ totalAfterDiscount | currency }}</small>
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div *ngIf="showScanner" class="scanner-overlay">
+    <div class="scanner-box">
+      <zxing-scanner
+        [formats]="scannerFormats"
+        (scanSuccess)="onCodeResult($event)"
+        [autofocusEnabled]="true"
+        class="scanner-view"
+      ></zxing-scanner>
+      <button class="btn btn-light mt-3" (click)="closeScanner()">Close Scanner</button>
+    </div>
+  </div>
+</div>

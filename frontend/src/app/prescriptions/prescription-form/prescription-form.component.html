@@ -1,0 +1,89 @@
+<div class="page-container">
+  <h2 class="fw-bold mb-4">New Prescription</h2>
+
+  <div *ngIf="error" class="alert alert-danger">{{ error }}</div>
+
+  <div class="card">
+    <div class="card-body">
+      <form [formGroup]="prescriptionForm" (ngSubmit)="onSubmit()">
+        <div class="row">
+          <div class="col-md-6 mb-3">
+            <label class="form-label">Patient *</label>
+            <select class="form-select" formControlName="patientId">
+              <option [ngValue]="null" disabled>-- Select Patient --</option>
+              <option *ngFor="let p of patients" [ngValue]="p.id">
+                {{ p.fullName }}<span *ngIf="p.branchName"> - {{ p.branchName }}</span>
+              </option>
+            </select>
+          </div>
+
+          <div class="col-md-6 mb-3">
+            <label class="form-label">Doctor Name *</label>
+            <input type="text" class="form-control" formControlName="doctorName" />
+          </div>
+        </div>
+
+        <div class="row">
+          <div class="col-md-4 mb-3">
+            <label class="form-label">Date</label>
+            <input type="date" class="form-control" formControlName="date" />
+          </div>
+
+          <div class="col-md-8 mb-3">
+            <label class="form-label">Notes</label>
+            <input type="text" class="form-control" formControlName="notes" />
+          </div>
+        </div>
+
+        <h5 class="mb-3">Medication Items</h5>
+
+        <div formArrayName="items">
+          <div
+            *ngFor="let item of items.controls; let i = index"
+            [formGroupName]="i"
+            class="row mb-3 border rounded p-3 position-relative"
+          >
+            <button
+              type="button"
+              class="btn-close position-absolute top-0 end-0 m-2"
+              (click)="removeItem(i)"
+            ></button>
+
+            <div class="col-md-5 mb-2">
+              <label class="form-label">Medication *</label>
+              <select class="form-select" formControlName="medicationId">
+                <option [ngValue]="null" disabled>-- Select --</option>
+                <option *ngFor="let med of medications" [ngValue]="med.id">
+                  {{ med.name }}
+                </option>
+              </select>
+            </div>
+
+            <div class="col-md-3 mb-2">
+              <label class="form-label">Dosage *</label>
+              <input type="text" class="form-control" formControlName="dosage" />
+            </div>
+
+            <div class="col-md-3 mb-2">
+              <label class="form-label">Duration</label>
+              <input type="text" class="form-control" formControlName="duration" />
+            </div>
+          </div>
+        </div>
+
+        <button type="button" class="btn btn-outline-primary mb-4" (click)="addItem()">
+          <i class="fas fa-plus me-1"></i> Add Item
+        </button>
+
+        <div class="d-flex gap-2">
+          <button type="submit" class="btn btn-success" [disabled]="prescriptionForm.invalid">
+            Save Prescription
+          </button>
+          <button type="button" class="btn btn-outline-secondary" [routerLink]="['/prescriptions']">
+            Cancel
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>

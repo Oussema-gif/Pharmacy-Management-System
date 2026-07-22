@@ -1,0 +1,185 @@
+<div class="page-container">
+  <header class="dashboard-header">
+    <div>
+      <p class="page-eyebrow">OVERVIEW</p>
+      <h1>Dashboard</h1>
+      <p class="page-description">
+        Monitor pharmacy activity, operational alerts, and sales performance.
+      </p>
+    </div>
+  </header>
+
+  <div *ngIf="loading" class="row g-4 dashboard-stats">
+    <div *ngFor="let item of [1, 2, 3, 4, 5]" class="col-xl col-lg-4 col-md-6">
+      <div class="card stat-card skeleton-card">
+        <div class="card-body">
+          <div class="stat-skeleton-content">
+            <div class="skeleton skeleton-label"></div>
+            <div class="skeleton skeleton-value"></div>
+          </div>
+          <div class="skeleton skeleton-icon"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div *ngIf="error && !loading" class="alert alert-danger dashboard-error" role="alert">
+    <i class="fas fa-circle-exclamation" aria-hidden="true"></i>
+    <span>{{ error }}</span>
+  </div>
+
+  <section *ngIf="stats && !loading" class="row g-4 dashboard-stats" aria-label="Pharmacy statistics">
+    <div *ngFor="let card of statCards" class="col-xl col-lg-4 col-md-6">
+      <article class="card stat-card">
+        <div class="card-body">
+          <div>
+            <p class="stat-label">{{ card.label }}</p>
+            <h2>{{ card.value }}</h2>
+          </div>
+          <div class="stat-icon" [style.background]="card.bg" aria-hidden="true">
+            <i [class]="card.icon"></i>
+          </div>
+        </div>
+      </article>
+    </div>
+  </section>
+
+  <section class="card analytics-toolbar" aria-label="Analytics date range">
+    <div>
+      <p class="card-eyebrow">VISUAL ANALYTICS</p>
+      <h5>Sales performance</h5>
+      <p *ngIf="analyticsScopeLabel" class="analytics-scope-label">
+        {{ analyticsScopeLabel }}
+      </p>
+    </div>
+    <div class="range-selector" role="group" aria-label="Select analytics range">
+      <button type="button" class="range-button" [class.active]="selectedRange === 7" (click)="changeRange(7)">7 days</button>
+      <button type="button" class="range-button" [class.active]="selectedRange === 30" (click)="changeRange(30)">30 days</button>
+      <button type="button" class="range-button" [class.active]="selectedRange === 90" (click)="changeRange(90)">90 days</button>
+    </div>
+  </section>
+
+  <div *ngIf="analyticsError && !analyticsLoading" class="alert alert-danger dashboard-error" role="alert">
+    <i class="fas fa-chart-line" aria-hidden="true"></i>
+    <span>{{ analyticsError }}</span>
+  </div>
+
+  <section class="row g-4 analytics-section">
+    <div class="col-xl-8">
+      <article class="card chart-card">
+        <header class="card-header">
+          <div>
+            <p class="card-eyebrow">REVENUE</p>
+            <h5>Sales trend</h5>
+          </div>
+          <div class="card-header-icon" aria-hidden="true"><i class="fas fa-chart-line"></i></div>
+        </header>
+        <div class="card-body chart-body">
+          <div *ngIf="analyticsLoading" class="chart-loading-state"><div class="skeleton chart-skeleton"></div></div>
+          <div *ngIf="analytics && !analyticsLoading && analytics.salesTrend.length" echarts [options]="salesTrendChartOptions" class="chart"></div>
+          <div *ngIf="analytics && !analyticsLoading && !analytics.salesTrend.length" class="empty-state chart-empty-state">
+            <div class="empty-state-icon"><i class="fas fa-chart-line"></i></div>
+            <h6>No sales data</h6>
+            <p>Completed sales in this period will appear here.</p>
+          </div>
+        </div>
+      </article>
+    </div>
+
+    <div class="col-xl-4">
+      <article class="card chart-card">
+        <header class="card-header">
+          <div>
+            <p class="card-eyebrow">BEST SELLERS</p>
+            <h5>Top medications</h5>
+          </div>
+          <div class="card-header-icon"><i class="fas fa-pills"></i></div>
+        </header>
+        <div class="card-body chart-body">
+          <div *ngIf="analyticsLoading" class="chart-loading-state"><div class="skeleton chart-skeleton"></div></div>
+          <div *ngIf="analytics && !analyticsLoading && analytics.topMedications.length" echarts [options]="topMedicationsChartOptions" class="chart top-medications-chart"></div>
+          <div *ngIf="analytics && !analyticsLoading && !analytics.topMedications.length" class="empty-state chart-empty-state">
+            <div class="empty-state-icon"><i class="fas fa-pills"></i></div>
+            <h6>No medication sales</h6>
+            <p>Top-selling medications will appear after sales are completed.</p>
+          </div>
+        </div>
+      </article>
+    </div>
+  </section>
+
+  <section *ngIf="stats && !loading" class="row g-4 dashboard-content">
+    <div class="col-xl-7">
+      <article class="card dashboard-card recent-sales-card">
+        <header class="card-header">
+          <div>
+            <p class="card-eyebrow">TRANSACTIONS</p>
+            <h5>Recent sales</h5>
+          </div>
+          <div class="card-header-icon"><i class="fas fa-receipt"></i></div>
+        </header>
+        <div class="card-body p-0">
+          <div class="table-responsive border-0 rounded-0">
+            <table *ngIf="stats.recentSales.length" class="table mb-0">
+              <thead>
+                <tr>
+                  <th>Date</th>
+                  <th>Customer</th>
+                  <th>Branch</th>
+                  <th class="text-end">Amount</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr *ngFor="let sale of stats.recentSales">
+                  <td class="sale-date">{{ sale.saleDate | date:'medium' }}</td>
+                  <td><span class="customer-name">{{ sale.patientName || 'Walk-in customer' }}</span></td>
+                  <td>{{ sale.branchName || '-' }}</td>
+                  <td class="text-end sale-amount">{{ sale.totalAmount | currency:'TND' }}</td>
+                </tr>
+              </tbody>
+            </table>
+
+            <div *ngIf="!stats.recentSales.length" class="empty-state">
+              <div class="empty-state-icon"><i class="fas fa-receipt"></i></div>
+              <h6>No recent sales</h6>
+              <p>Completed transactions will appear here.</p>
+            </div>
+          </div>
+        </div>
+      </article>
+    </div>
+
+    <div class="col-xl-5">
+      <article class="card dashboard-card alerts-card">
+        <header class="card-header">
+          <div>
+            <p class="card-eyebrow">ATTENTION REQUIRED</p>
+            <h5>Active alerts</h5>
+          </div>
+          <div class="card-header-icon"><i class="fas fa-bell"></i></div>
+        </header>
+        <div class="card-body alerts-body">
+          <div
+            *ngFor="let alert of stats.alerts"
+            class="dashboard-alert"
+            [ngClass]="{
+              'dashboard-alert-warning': alert.type === 'LOW_STOCK',
+              'dashboard-alert-danger': alert.type === 'EXPIRY'
+            }"
+          >
+            <div class="alert-icon">
+              <i [class]="alert.type === 'EXPIRY' ? 'fas fa-triangle-exclamation' : 'fas fa-box-open'"></i>
+            </div>
+            <p>{{ alert.message }}</p>
+          </div>
+
+          <div *ngIf="!stats.alerts.length" class="empty-state alerts-empty-state">
+            <div class="empty-state-icon success"><i class="fas fa-circle-check"></i></div>
+            <h6>All clear</h6>
+            <p>There are no active pharmacy alerts.</p>
+          </div>
+        </div>
+      </article>
+    </div>
+  </section>
+</div>

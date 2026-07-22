@@ -1,0 +1,56 @@
+<div class="page-container">
+  <h2 class="fw-bold mb-4">Audit Logs</h2>
+  <div *ngIf="error" class="alert alert-danger">{{ error }}</div>
+
+  <div class="row mb-3">
+    <div class="col-md-4">
+      <select class="form-select" [(ngModel)]="filterEntity" (change)="applyFilter()">
+        <option value="">All Entities</option>
+        <option value="Medication">Medication</option>
+        <option value="Supplier">Supplier</option>
+        <option value="User">User</option>
+        <option value="Branch">Branch</option>
+        <option value="Patient">Patient</option>
+        <option value="Prescription">Prescription</option>
+        <option value="Batch">Batch</option>
+        <option value="Sale">Sale</option>
+      </select>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-body p-0">
+      <div class="table-responsive">
+        <table class="table mb-0" *ngIf="logs.length > 0">
+          <thead>
+            <tr>
+              <th>Timestamp</th>
+              <th>Entity</th>
+              <th>Entity ID</th>
+              <th>Action</th>
+              <th>Details</th>
+              <th>Performed By</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let log of logs">
+              <td>{{ log.timestamp | date:'medium' }}</td>
+              <td>{{ log.entityName }}</td>
+              <td>{{ log.entityId }}</td>
+              <td>
+                <span class="badge" [ngClass]="{
+                  'bg-success': log.action === 'CREATE',
+                  'bg-warning text-dark': log.action === 'UPDATE',
+                  'bg-danger': log.action === 'DELETE'
+                }">{{ log.action }}</span>
+              </td>
+              <td>{{ log.details }}</td>
+              <td>{{ log.performedBy }}</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+      <p *ngIf="logs.length === 0 && !loading" class="text-muted p-3">No audit logs found.</p>
+    </div>
+  </div>
+</div>

@@ -1,0 +1,144 @@
+<div class="page-container profile-page">
+  <header class="profile-header">
+    <div>
+      <p class="page-eyebrow">ACCOUNT</p>
+      <h1>My Profile</h1>
+      <p class="page-description">
+        Update your personal information and keep your account secure.
+      </p>
+    </div>
+  </header>
+
+  <div *ngIf="loading" class="card profile-loading-card">
+    <div class="card-body">
+      <p>Loading your profile...</p>
+    </div>
+  </div>
+
+  <div *ngIf="!loading" class="row g-4">
+    <div class="col-xl-5">
+      <article class="card profile-summary-card">
+        <div class="card-body">
+          <p class="card-eyebrow">PROFILE SUMMARY</p>
+          <div class="profile-avatar">
+            {{ user?.fullName?.charAt(0) || 'U' }}
+          </div>
+          <h5>{{ user?.fullName }}</h5>
+          <p class="profile-email">{{ user?.email }}</p>
+
+          <div class="profile-meta">
+            <div class="profile-meta-item">
+              <span class="meta-label">Role</span>
+              <strong>{{ user?.role }}</strong>
+            </div>
+
+            <div class="profile-meta-item">
+              <span class="meta-label">Branch</span>
+              <strong>{{ user?.branchName || 'Not assigned' }}</strong>
+            </div>
+          </div>
+        </div>
+      </article>
+    </div>
+
+    <div class="col-xl-7">
+      <article class="card profile-form-card">
+        <div class="card-body">
+          <p class="card-eyebrow">PERSONAL DETAILS</p>
+          <h5>Profile information</h5>
+
+          <div *ngIf="profileSuccess" class="alert alert-success mt-3" role="alert">
+            {{ profileSuccess }}
+          </div>
+
+          <div *ngIf="profileError" class="alert alert-danger mt-3" role="alert">
+            {{ profileError }}
+          </div>
+
+          <form [formGroup]="profileForm" (ngSubmit)="saveProfile()" class="profile-form">
+            <div class="form-field">
+              <label for="fullName">Full name</label>
+              <input id="fullName" type="text" class="form-control" formControlName="fullName" />
+              <small *ngIf="profileForm.controls.fullName.touched && profileForm.controls.fullName.invalid">
+                Full name must contain at least 3 characters.
+              </small>
+            </div>
+
+            <div class="form-field">
+              <label for="email">Email address</label>
+              <input id="email" type="email" class="form-control" formControlName="email" />
+              <small *ngIf="profileForm.controls.email.touched && profileForm.controls.email.invalid">
+                Enter a valid email address.
+              </small>
+            </div>
+
+            <div class="actions">
+              <button type="submit" class="btn btn-primary" [disabled]="savingProfile">
+                {{ savingProfile ? 'Saving...' : 'Save profile' }}
+              </button>
+            </div>
+          </form>
+        </div>
+      </article>
+
+      <article class="card password-form-card mt-4">
+        <div class="card-body">
+          <p class="card-eyebrow">SECURITY</p>
+          <h5>Change password</h5>
+
+          <div *ngIf="passwordSuccess" class="alert alert-success mt-3" role="alert">
+            {{ passwordSuccess }}
+          </div>
+
+          <div *ngIf="passwordError" class="alert alert-danger mt-3" role="alert">
+            {{ passwordError }}
+          </div>
+
+          <form [formGroup]="passwordForm" (ngSubmit)="changePassword()" class="profile-form">
+            <div class="form-field">
+              <label for="currentPassword">Current password</label>
+              <input
+                id="currentPassword"
+                type="password"
+                class="form-control"
+                formControlName="currentPassword"
+              />
+            </div>
+
+            <div class="form-field">
+              <label for="newPassword">New password</label>
+              <input
+                id="newPassword"
+                type="password"
+                class="form-control"
+                formControlName="newPassword"
+              />
+              <small *ngIf="passwordForm.controls.newPassword.touched && passwordForm.controls.newPassword.invalid">
+                Use at least 8 characters, with uppercase, lowercase, number, and special character.
+              </small>
+            </div>
+
+            <div class="form-field">
+              <label for="confirmPassword">Confirm new password</label>
+              <input
+                id="confirmPassword"
+                type="password"
+                class="form-control"
+                formControlName="confirmPassword"
+              />
+              <small *ngIf="passwordForm.touched && passwordForm.errors?.['passwordMismatch']">
+                Password confirmation does not match.
+              </small>
+            </div>
+
+            <div class="actions">
+              <button type="submit" class="btn btn-primary" [disabled]="changingPassword">
+                {{ changingPassword ? 'Updating...' : 'Change password' }}
+              </button>
+            </div>
+          </form>
+        </div>
+      </article>
+    </div>
+  </div>
+</div>

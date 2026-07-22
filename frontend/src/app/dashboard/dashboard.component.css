@@ -1,0 +1,346 @@
+:host {
+  display: block;
+}
+
+.dashboard-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  margin-bottom: 28px;
+}
+
+.page-eyebrow,
+.card-eyebrow {
+  margin: 0 0 6px;
+  color: var(--color-primary-700);
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+}
+
+.dashboard-header h1 {
+  margin: 0;
+  color: var(--color-text);
+  font-size: 28px;
+  font-weight: 750;
+  letter-spacing: -0.035em;
+}
+
+.page-description {
+  margin: 8px 0 0;
+  color: var(--color-text-muted);
+  font-size: 14px;
+}
+
+.dashboard-stats {
+  margin-bottom: 28px;
+}
+
+.stat-label {
+  margin: 0 0 6px;
+  color: var(--color-text-muted);
+  font-size: 12px;
+  font-weight: 600;
+}
+
+.stat-card h2 {
+  margin: 0;
+  color: var(--color-text);
+  font-size: 27px;
+  font-weight: 750;
+  font-variant-numeric: tabular-nums;
+  letter-spacing: -0.035em;
+}
+
+.analytics-toolbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  margin-bottom: 16px;
+  padding: 16px 20px;
+}
+
+.analytics-toolbar h5,
+.card-header h5 {
+  margin: 0;
+  color: var(--color-text);
+  font-size: 16px;
+  font-weight: 700;
+}
+
+.range-selector {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 4px;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  background: var(--color-surface-alt);
+}
+
+.range-button {
+  min-height: 32px;
+  padding: 0 12px;
+  border: 0;
+  border-radius: 7px;
+  background: transparent;
+  color: var(--color-text-muted);
+  font-size: 12px;
+  font-weight: 700;
+  transition:
+    background var(--transition-fast),
+    color var(--transition-fast),
+    box-shadow var(--transition-fast);
+}
+
+.range-button:hover:not(.active) {
+  color: var(--color-text);
+}
+
+.range-button.active {
+  background: var(--color-surface);
+  color: var(--color-primary-700);
+  box-shadow: var(--shadow-xs);
+}
+
+.analytics-section {
+  margin-bottom: 28px;
+}
+
+.chart-card {
+  height: 100%;
+}
+
+.chart-card .card-header,
+.dashboard-card .card-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.chart-body {
+  min-height: 330px;
+  padding: 12px;
+}
+
+.chart {
+  width: 100%;
+  height: 306px;
+}
+
+.top-medications-chart {
+  height: 306px;
+}
+
+.chart-loading-state {
+  display: flex;
+  min-height: 306px;
+  align-items: center;
+  padding: 8px;
+}
+
+.chart-skeleton {
+  width: 100%;
+  height: 270px;
+  border-radius: var(--radius-md);
+}
+
+.dashboard-card {
+  height: 100%;
+}
+
+.card-header-icon {
+  display: inline-flex;
+  width: 36px;
+  height: 36px;
+  align-items: center;
+  justify-content: center;
+  border-radius: 9px;
+  background: var(--color-surface-alt);
+  color: var(--color-primary-700);
+  font-size: 14px;
+}
+
+.sale-date {
+  color: var(--color-text-muted);
+  font-size: 12px;
+  white-space: nowrap;
+}
+
+.customer-name {
+  color: var(--color-text);
+  font-weight: 600;
+}
+
+.sale-amount {
+  color: var(--color-text);
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+}
+
+.alerts-body {
+  display: grid;
+  gap: 10px;
+}
+
+.dashboard-alert {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  padding: 13px;
+  border: 1px solid transparent;
+  border-radius: var(--radius-md);
+}
+
+.dashboard-alert p {
+  margin: 1px 0 0;
+  font-size: 13px;
+  font-weight: 500;
+  line-height: 1.5;
+}
+
+.dashboard-alert-warning {
+  border-color: #fde68a;
+  background: var(--color-warning-bg);
+  color: var(--color-warning);
+}
+
+.dashboard-alert-danger {
+  border-color: #fecaca;
+  background: var(--color-danger-bg);
+  color: var(--color-danger);
+}
+
+.alert-icon {
+  display: inline-flex;
+  width: 28px;
+  height: 28px;
+  flex: 0 0 28px;
+  align-items: center;
+  justify-content: center;
+  border-radius: 8px;
+  font-size: 13px;
+}
+
+.dashboard-alert-warning .alert-icon {
+  background: color-mix(in srgb, var(--color-warning) 15%, transparent);
+}
+
+.dashboard-alert-danger .alert-icon {
+  background: color-mix(in srgb, var(--color-danger) 15%, transparent);
+}
+
+.empty-state {
+  display: flex;
+  min-height: 222px;
+  align-items: center;
+  justify-content: center;
+  flex-direction: column;
+  padding: 32px 20px;
+  color: var(--color-text-muted);
+  text-align: center;
+}
+
+.chart-empty-state {
+  min-height: 306px;
+}
+
+.empty-state-icon {
+  display: inline-flex;
+  width: 44px;
+  height: 44px;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 14px;
+  border-radius: 12px;
+  background: var(--color-surface-alt);
+  color: var(--color-text-muted);
+  font-size: 18px;
+}
+
+.empty-state-icon.success {
+  background: var(--color-success-bg);
+  color: var(--color-success);
+}
+
+.empty-state h6 {
+  margin: 0;
+  color: var(--color-text);
+  font-size: 14px;
+  font-weight: 700;
+}
+
+.empty-state p {
+  margin: 6px 0 0;
+  font-size: 13px;
+}
+
+.alerts-empty-state {
+  min-height: 206px;
+}
+
+.stat-skeleton-content {
+  width: 65%;
+}
+
+.skeleton-label {
+  width: 70%;
+  height: 12px;
+  margin-bottom: 12px;
+}
+
+.skeleton-value {
+  width: 48%;
+  height: 28px;
+}
+
+.skeleton-icon {
+  width: 48px;
+  height: 48px;
+  border-radius: var(--radius-md);
+}
+
+.dashboard-error {
+  margin-bottom: 28px;
+}
+
+@media (max-width: 768px) {
+  .analytics-toolbar {
+    align-items: flex-start;
+    flex-direction: column;
+  }
+
+  .range-selector {
+    width: 100%;
+  }
+
+  .range-button {
+    flex: 1;
+  }
+}
+
+@media (max-width: 576px) {
+  .dashboard-header h1 {
+    font-size: 25px;
+  }
+
+  .page-description {
+    font-size: 13px;
+  }
+
+  .chart-body {
+    min-height: 290px;
+  }
+
+  .chart,
+  .top-medications-chart {
+    height: 266px;
+  }
+
+  .chart-loading-state,
+  .chart-empty-state {
+    min-height: 266px;
+  }
+}

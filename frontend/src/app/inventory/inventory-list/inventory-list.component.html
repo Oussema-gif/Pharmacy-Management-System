@@ -1,0 +1,130 @@
+<div class="page-container">
+  <div class="d-flex justify-content-between align-items-center mb-4">
+    <div>
+      <h2 class="fw-bold mb-1">Inventory & Purchases</h2>
+      <p class="text-muted mb-0">{{ scopeLabel }}</p>
+    </div>
+
+    <div class="d-flex gap-2">
+      <button class="btn btn-outline-secondary" (click)="refresh()" [disabled]="loadingStock || loadingPurchases">
+        <i class="fas fa-sync-alt me-2"></i> Refresh
+      </button>
+
+      <button class="btn btn-primary" [routerLink]="['/inventory/purchase/new']">
+        <i class="fas fa-plus me-2"></i> New Purchase Order
+      </button>
+    </div>
+  </div>
+
+  <div *ngIf="error" class="alert alert-danger">
+    {{ error }}
+  </div>
+
+  <ng-container *ngIf="!error">
+    <ul class="nav nav-pills mb-4">
+      <li class="nav-item">
+        <a class="nav-link" [class.active]="activeTab === 'stock'" (click)="activeTab = 'stock'">Stock</a>
+      </li>
+      <li class="nav-item">
+        <a class="nav-link" [class.active]="activeTab === 'purchases'" (click)="activeTab = 'purchases'">Purchases</a>
+      </li>
+    </ul>
+
+    <div *ngIf="activeTab === 'stock'">
+      <div class="card">
+        <div class="card-body p-0">
+          <div *ngIf="loadingStock">
+            <table class="table mb-0">
+              <thead>
+                <tr>
+                  <th>Medication</th>
+                  <th>Batch #</th>
+                  <th>Qty</th>
+                  <th>Expiry</th>
+                  <th>Purchase Price</th>
+                  <th>Selling Price</th>
+                  <th class="text-end">Actions</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr *ngFor="let _ of [1,2,3]">
+                  <td><div class="skeleton skeleton-text"></div></td>
+                  <td><div class="skeleton skeleton-text"></div></td>
+                  <td><div class="skeleton skeleton-text"></div></td>
+                  <td><div class="skeleton skeleton-text"></div></td>
+                  <td><div class="skeleton skeleton-text"></div></td>
+                  <td><div class="skeleton skeleton-text"></div></td>
+                  <td><div class="skeleton skeleton-button"></div></td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+
+          <div class="table-responsive" *ngIf="!loadingStock">
+            <table class="table mb-0" *ngIf="stock.length > 0">
+              <thead>
+                <tr>
+                  <th>Medication</th>
+                  <th>Batch #</th>
+                  <th>Qty</th>
+                  <th>Expiry</th>
+                  <th>Purchase Price</th>
+                  <th>Selling Price</th>
+                  <th class="text-end">Actions</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr *ngFor="let batch of stock" [class.table-warning]="batch.quantity <= 10">
+                  <td>{{ batch.medicationName }}</td>
+                  <td>{{ batch.batchNumber }}</td>
+                  <td>{{ batch.quantity }}</td>
+                  <td>{{ batch.expiryDate }}</td>
+                  <td>{{ batch.purchasePrice | currency }}</td>
+                  <td>{{ batch.sellingPrice | currency }}</td>
+                  <td class="text-end">
+                    <button class="btn btn-sm btn-warning" (click)="editBatch(batch)">Edit</button>
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+
+          <p *ngIf="!loadingStock && stock.length === 0" class="text-muted p-3">
+            No stock items.
+          </p>
+        </div>
+      </div>
+    </div>
+
+    <div *ngIf="activeTab === 'purchases'">
+      <div *ngIf="loadingPurchases">
+        <div class="card mb-3 skeleton-card" *ngFor="let _ of [1,2]">
+          <div class="card-body">
+            <div class="skeleton skeleton-heading"></div>
+            <div class="skeleton skeleton-text"></div>
+          </div>
+        </div>
+      </div>
+
+      <div *ngIf="!loadingPurchases">
+        <div class="card mb-3" *ngFor="let purchase of purchases">
+          <div class="card-header d-flex justify-content-between align-items-center">
+            <span class="fw-semibold">Purchase #{{ purchase.id }} – {{ purchase.supplierName }}</span>
+            <small class="text-muted">{{ purchase.purchaseDate | date:'medium' }}</small>
+          </div>
+          <div class="card-body">
+            <p class="mb-1">Total: <strong>{{ purchase.totalAmount | currency }}</strong></p>
+            <ul class="list-group list-group-flush">
+              <li *ngFor="let item of purchase.items" class="list-group-item d-flex justify-content-between">
+                <span>{{ item.medicationName }} ({{ item.batchNumber }})</span>
+                <span>{{ item.quantity }} x {{ item.unitPrice | currency }}</span>
+              </li>
+            </ul>
+          </div>
+        </div>
+
+        <p *ngIf="purchases.length === 0" class="text-muted">No purchases yet.</p>
+      </div>
+    </div>
+  </ng-container>
+</div>

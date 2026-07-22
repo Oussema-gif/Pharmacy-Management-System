@@ -1,0 +1,40 @@
+<div class="page-container">
+  <div class="d-flex justify-content-between align-items-center mb-4">
+    <h2 class="fw-bold">Prescriptions</h2>
+    <button class="btn btn-primary" [routerLink]="['/prescriptions/new']">
+      <i class="fas fa-plus me-2"></i> New Prescription
+    </button>
+  </div>
+
+  <div *ngIf="error" class="alert alert-danger">{{ error }}</div>
+
+  <div class="row" *ngIf="prescriptions.length > 0; else emptyState">
+    <div class="col-12 mb-3" *ngFor="let pres of prescriptions">
+      <div class="card">
+        <div class="card-header d-flex justify-content-between align-items-center">
+          <span>
+            <strong>Dr. {{ pres.doctorName }}</strong> – {{ pres.date }} – Patient: {{ pres.patientName }}
+          </span>
+          <button class="btn btn-sm btn-danger" (click)="deletePrescription(pres.id!)">
+            Delete
+          </button>
+        </div>
+
+        <div class="card-body">
+          <p class="mb-2">{{ pres.notes || 'No notes provided.' }}</p>
+
+          <ul class="list-group">
+            <li *ngFor="let item of pres.items" class="list-group-item d-flex justify-content-between">
+              <span>{{ item.medicationName }} ({{ item.dosage }})</span>
+              <span class="text-muted">{{ item.duration || '-' }}</span>
+            </li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <ng-template #emptyState>
+    <p *ngIf="!error" class="text-muted">No prescriptions found.</p>
+  </ng-template>
+</div>
