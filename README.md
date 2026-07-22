@@ -159,8 +159,9 @@ cd backend
 
 ## 📝 License
 
-This project is proprietary software. All rights reserved. Contact the developer for licensing options.
-
+This project is proprietary software. All rights reserved.  
+See the [LICENSE](./LICENSE) file for details.  
+Contact the developer for commercial licensing options.
 ---
 
 ## 👨‍💻 Developer
