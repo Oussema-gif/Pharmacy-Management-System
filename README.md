@@ -114,7 +114,18 @@ Frontend: **http://localhost:4200**
 
 ## 📸 Screenshots
 
-Add screenshots of the login page, dashboard, POS, inventory, charts, alerts, etc., inside a `screenshots/` folder and link them here.
+![Login Page](screenshots/loginPage.png)
+![Dashboard](screenshots/dashboardPage.png)
+![POS](screenshots/PointOfSale.png) 
+![Reports](screenshots/reports.png)
+![Alerts](screenshots/alerts.png)
+![Inventory](screenshots/inventory&purchase.png)
+![Prescriptions](screenshots/prescriptions.png)
+![Medications](screenshots/medications.png)
+![Audit Logs](screenshots/auditlogs.png)
+![Dark Mode View](screenshots/darkmode.png)
+
+
 
 ---
 
